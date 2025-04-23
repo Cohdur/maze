@@ -2,19 +2,18 @@
 #include<iostream>
 #include<ctime>
 #include<random>
+#include<map>
 
-//#include "graph_class.h"
-
-class maze //: public graph_class<char, int> // char = character/ board & int is edge weight
+#include "Graph.h"
+template<typename V,typename E>
+class maze : public graph_class<V, E> // char = character/ board & int is edge weight
 {
 
     private:
 
     const static int size = 4;
     const static int big_size = size * 4;
-
-    int start;
-    int exit;
+    typedef std::map<ActualVertex*,ActualEdge*> trial;
 
     
     std::vector<std::vector<char>> grid
@@ -27,8 +26,6 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
 
     std::vector<std::vector<char>> big_maze;
 
-    std::vector<int> testValues;
-    std::vector<int> testValues2;
     public :
 
         void createMaze()
@@ -53,8 +50,6 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     {
                         for (int j = 0; j < size; ++j)
                         {
-                            testValues.push_back(block_row * size + i);
-                            testValues2.push_back(block_col * size + j);
                             big_maze[block_row * size + i][block_col * size + j] = grid[i][j];
                         }
                     }
@@ -69,7 +64,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0, 15);
                     int random_choice2 = distrib(engine);
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
 
@@ -80,7 +75,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
 
@@ -91,7 +86,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
 
@@ -102,7 +97,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
 
@@ -113,7 +108,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 5 :
@@ -123,7 +118,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 6 :
@@ -133,7 +128,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 7 :
@@ -143,7 +138,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 8 :
@@ -153,7 +148,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 9 :
@@ -163,7 +158,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 10 :
@@ -173,7 +168,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 11 :
@@ -183,7 +178,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 12 :
@@ -193,7 +188,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
 
@@ -204,7 +199,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
 
@@ -215,7 +210,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
                 case 15 :
@@ -224,7 +219,7 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,15);
                     int random_choice2 = distrib(engine);
-                    start = big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
 
@@ -247,15 +242,17 @@ class maze //: public graph_class<char, int> // char = character/ board & int is
 
         }
 
-        
 
-/*
 class position : public graph_class::Vertex
 {
+    private:
+    ActualVertex* start;
+    ActualVertex* exit;
+
     
 
 };
-*/
+
     
 
 };
@@ -265,7 +262,7 @@ using namespace std;
 
 int main()
 {
-    maze game;
+    maze<char,int> game;
 
     game.createMaze();
 

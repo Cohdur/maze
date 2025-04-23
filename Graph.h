@@ -1,18 +1,21 @@
 #include <unordered_map>
+#include <list>
 
 template<typename V, typename E>
-class graph_class
+class Graph
 {
     private:
+    class ActualVertex;
+    class ActualEdge;
+
     typedef std::unordered_map<ActualVertex*,ActualEdge*> IncidenceMap;
-    
     //---------- nested ActualVertex class ---------
     class ActualVertex {
       public:
         V element;
         IncidenceMap outgoing;
         IncidenceMap incoming;
-        typename list<ActualVertex>::iterator pos;   // needed to erase from vertex_list
+        typename std::list<ActualVertex>::iterator pos;   // needed to erase from vertex_list
         ActualVertex(V elem) : element{elem} {}
     }; //---------- end of ActualVertex class ---------
     
@@ -23,10 +26,11 @@ class graph_class
         ActualVertex* dest;
         int weight;
         E element;
-        typename list<ActualEdge>::iterator pos;    // needed to erase from edge_list
+        typename std::list<ActualEdge>::iterator pos;    // needed to erase from edge_list
         ActualEdge(ActualVertex* u, ActualVertex* v, int w, E e)
             : origin{u}, dest{v}, weight{w}, element{e} {}
     }; //---------- end of ActualEdge class ---------
+
 
   public:
     //---------- nested Vertex class ---------
@@ -64,8 +68,8 @@ class graph_class
 
     private:
     // --------- Graph instance variables -----------
-    list<ActualVertex> vertex_list;
-    list<ActualEdge> edge_list;
+    std::list<ActualVertex> vertex_list;
+    std::list<ActualEdge> edge_list;
     bool directed;
 
   public:    
@@ -82,16 +86,16 @@ class graph_class
     int num_edges() const { return edge_list.size(); }
     
     // Returns a list of Vertex tokens
-    list<Vertex> vertices() const {
-        list<Vertex> result;
+    std::list<Vertex> vertices() const {
+        std::list<Vertex> result;
         for (const ActualVertex& v : vertex_list)      // Note: reference variable to get correct pointer
             result.push_back(Vertex(&v));
         return result;
     }
 
     // Returns a list of Edge tokens
-    list<Edge> edges() const {
-        list<Edge> result;
+    std::list<Edge> edges() const {
+        std::list<Edge> result;
         for (const ActualEdge& e : edge_list)         // Note: reference variable to get correct pointer
             result.push_back(Edge(&e));
         return result;
@@ -114,8 +118,8 @@ class graph_class
     }
 
     // Returns a list of outgoing (or incoming) Vertex tokens for neighbors of Vertex v
-    list<Vertex> neighbors(Vertex v, bool outgoing = true) const {
-        list<Vertex> result;
+    std::list<Vertex> neighbors(Vertex v, bool outgoing = true) const {
+        std::list<Vertex> result;
         IncidenceMap& adj(outgoing || !directed ? v.vert->outgoing : v.vert->incoming);
         for (auto p : adj)                          // p is {ActualVertex*,ActualEdge*} pair
             result.push_back(Vertex(p.first));
@@ -123,8 +127,8 @@ class graph_class
     }
     
     // Returns a list of outgoing (or incoming) Edge tokens for Vertex v
-    list<Edge> incident_edges(Vertex v, bool outgoing = true) const {
-        list<Edge> result;
+    std::list<Edge> incident_edges(Vertex v, bool outgoing = true) const {
+        std::list<Edge> result;
         IncidenceMap& adj(outgoing || !directed ? v.vert->outgoing : v.vert->incoming);
         for (auto p : adj)                          // p is {ActualVertex*,ActualEdge*} pair
             result.push_back(Edge(p.second));
@@ -132,7 +136,7 @@ class graph_class
     }
     
     // Returns the (origin,destination) pair for Edge e
-    pair<Vertex,Vertex> endpoints(Edge e) const {
+    std::pair<Vertex,Vertex> endpoints(Edge e) const {
         return {Vertex(e.edge->origin), Vertex(e.edge->dest)};
     }
     

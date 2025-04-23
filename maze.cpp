@@ -6,14 +6,17 @@
 
 #include "Graph.h"
 template<typename V,typename E>
-class maze : public graph_class<V, E> // char = character/ board & int is edge weight
+class maze : public Graph<V, E> // char = character/ board & int is edge weight
 {
 
     private:
 
+    typedef typename Graph<V,E>::Vertex::vert Vert;
+    typedef typename Graph<V,E>::Edge::edge Edge;
+
     const static int size = 4;
     const static int big_size = size * 4;
-    typedef std::map<ActualVertex*,ActualEdge*> trial;
+    typedef std::map<Vert*,Edge*> trial;
 
     
     std::vector<std::vector<char>> grid
@@ -34,7 +37,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
             //std::vector<int> wall_choices = {0, 1, 2, 3, 4, 7, 8, 11, 12, 13, 14, 15}; // utilized in switch
             std::random_device rd;
             std::mt19937 engine(rd());
-            std::uniform_int_distribution<> distrib(0, 15); //Grid_choices.size() - 1); 
+            std::uniform_int_distribution<> distrib(0, big_size - 1); //Grid_choices.size() - 1); 
             int random_choice = distrib(engine);
             //int random_choice = Grid_choices[distrib(engine)];
 
@@ -62,15 +65,14 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 {
                     std::random_device rd;
                     std::mt19937 engine(rd());
-                    std::uniform_int_distribution<> distrib(0, 15);
+                    std::uniform_int_distribution<> distrib(0, big_size - 1);
                     int random_choice2 = distrib(engine);
                     big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
-
                 case 1 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -78,10 +80,9 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                     big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
-
                 case 2 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -89,10 +90,9 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                     big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
-
                 case 3 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -100,10 +100,9 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                     big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
                 break;
-
                 case 4 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -113,7 +112,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 break;
                 case 5 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -123,7 +122,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 break;
                 case 6 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -133,7 +132,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 break;
                 case 7 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -143,7 +142,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 break;
                 case 8 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -153,7 +152,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 break;
                 case 9 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -163,7 +162,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 break;
                 case 10 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -173,7 +172,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 break;
                 case 11 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -183,7 +182,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 break;
                 case 12 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -194,7 +193,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
 
                 case 13 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -205,7 +204,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
 
                 case 14 :
                 {
-                    std::vector<int> wall_choices{0, 15};
+                    std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
@@ -217,7 +216,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
                 {
                     std::random_device rd;
                     std::mt19937 engine(rd());
-                    std::uniform_int_distribution<> distrib(0,15);
+                    std::uniform_int_distribution<> distrib(0, big_size - 1);
                     int random_choice2 = distrib(engine);
                     big_maze.at(random_choice).at(random_choice2) = 'A';
                 }
@@ -243,7 +242,7 @@ class maze : public graph_class<V, E> // char = character/ board & int is edge w
         }
 
 
-class position : public graph_class::Vertex
+class position : public Graph<V,E>::Vertex
 {
     private:
     ActualVertex* start;
@@ -262,7 +261,7 @@ using namespace std;
 
 int main()
 {
-    maze<char,int> game;
+    maze game;
 
     game.createMaze();
 

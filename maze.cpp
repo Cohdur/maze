@@ -5,19 +5,23 @@
 #include<map>
 
 #include "Graph.h"
+
 template<typename V,typename E>
 class maze : public Graph<V, E> // char = character/ board & int is edge weight
 {
+    public:
+    maze() : Graph<V, E>(false) {} // Explicitly call the base class constructor
 
     private:
 
-    typedef typename Graph<V,E>::Vertex::vert Vert;
-    typedef typename Graph<V,E>::Edge::edge Edge;
+    typedef Graph<V,E> g;
+
+    typedef std::map<typename Graph<V,E>::Vertex, typename Graph<V,E>::Edge> trial;
+
 
     const static int size = 4;
     const static int big_size = size * 4;
-    typedef std::map<Vert*,Edge*> trial;
-
+    std::vector<std::vector<char>> big_maze;
     
     std::vector<std::vector<char>> grid
     {
@@ -27,9 +31,25 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
         {'+', '+', '+', '+'}
     };
 
-    std::vector<std::vector<char>> big_maze;
 
     public :
+
+    class Position : public Graph<V,E>::Vertex
+    {
+        private:
+        
+        typename Graph<V, E>::Vertex* pos{nullptr};
+        Position(const typename Graph<V, E>::Vertex* v) : pos{const_cast<typename Graph<V, E>::Vertex*>(v)} {}
+    
+    };
+    
+    class Path : public Graph<V,E>::Edge
+    {
+        private:
+        typename Graph<V,E>::Edge* edge{nullptr};
+        Path(const typename Graph<V,E>::Edge* e) : edge{const_cast<typename Graph<V,E>::Edge*>(e)} {}
+    
+    };
 
         void createMaze()
         {
@@ -54,6 +74,10 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                         for (int j = 0; j < size; ++j)
                         {
                             big_maze[block_row * size + i][block_col * size + j] = grid[i][j];
+                            if(grid[i][j] == ' ')
+                            {
+                               this->insert_vertex(big_maze[block_row * size + i][block_col * size + j] = grid[i][j]);// here
+                            }
                         }
                     }
                 }
@@ -68,6 +92,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0, big_size - 1);
                     int random_choice2 = distrib(engine);
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 1 :
@@ -78,6 +103,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 2 :
@@ -88,6 +114,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 3 :
@@ -98,6 +125,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 4 :
@@ -108,6 +136,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 5 :
@@ -118,6 +147,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 6 :
@@ -128,6 +158,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 7 :
@@ -138,6 +169,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 8 :
@@ -148,6 +180,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 9 :
@@ -158,6 +191,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 10 :
@@ -168,6 +202,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 11 :
@@ -178,6 +213,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 12 :
@@ -188,6 +224,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
 
@@ -199,6 +236,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
 
@@ -210,6 +248,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
                 case 15 :
@@ -219,6 +258,7 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                     std::uniform_int_distribution<> distrib(0, big_size - 1);
                     int random_choice2 = distrib(engine);
                     big_maze.at(random_choice).at(random_choice2) = 'A';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                 }
                 break;
 
@@ -240,18 +280,6 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
             }
 
         }
-
-
-class position : public Graph<V,E>::Vertex
-{
-    private:
-    ActualVertex* start;
-    ActualVertex* exit;
-
-    
-
-};
-
     
 
 };
@@ -261,7 +289,7 @@ using namespace std;
 
 int main()
 {
-    maze game;
+    maze<char, int> game;
 
     game.createMaze();
 

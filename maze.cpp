@@ -10,7 +10,7 @@ template<typename V,typename E>
 class maze : public Graph<V, E> // char = character/ board & int is edge weight
 {
     public:
-    maze() : Graph<V, E>(false) {} // Explicitly call the base class constructor
+    maze() : Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
 
     private:
 

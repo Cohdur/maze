@@ -228,176 +228,348 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
             {
                 case 0 : 
                 {
+                    cout << 'a' << endl;
+
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0, big_size - 1);
                     int random_choice2 = distrib(engine);
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    big_maze.at(random_choice + 1).at(random_choice2) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    big_maze.at(random_choice2).at(random_choice + 1) = ' ';
                 }
                 break;
                 case 1 :
                 {
-                    std::vector<int> wall_choices{0, big_size - 1};
+                    cout << '1' << endl;
+                    std::vector<int> wall_choices{0, big_size - 1}; // can create one local variable up top for more professional look 
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                        
+                        big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
                 }
                 break;
                 case 2 :
                 {
+                    cout << '2' << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+
                 }
                 break;
                 case 3 :
                 {
+                    cout << '3' << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                    
                 }
                 break;
                 case 4 :
                 {
+                    cout << '4' << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' '; 
                 }
                 break;
                 case 5 :
                 {
+                    cout << '5' << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' '; 
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                     
                 }
                 break;
                 case 6 :
                 {
+                    cout << '6' << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' '; 
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                     
                 }
                 break;
                 case 7 :
                 {
+                    cout << '7' << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                     
                 }
                 break;
                 case 8 :
                 {
+                    cout << '8' << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                    
                 }
                 break;
                 case 9 :
                 {
+                    cout << '9' << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                    
                 }
                 break;
                 case 10 :
                 {
+                    cout << "10" << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                    
                 }
                 break;
                 case 11 :
                 {
+                    cout << "11" << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' '; 
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                     
                 }
                 break;
                 case 12 :
                 {
+                    cout << "12" << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                    
                 }
                 break;
                 case 13 :
                 {
+                    cout << "13" << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                    
                 }
                 break;
                 case 14 :
                 {
+                    cout << "14" << endl;
                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' '; 
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                    
                 }
                 break;
                 case 15 :
                 {
+                    cout << "15" << endl;
+                     std::vector<int> wall_choices{0, big_size - 1};
                     std::random_device rd;
                     std::mt19937 engine(rd());
-                    std::uniform_int_distribution<> distrib(0, big_size - 1);
-                    int random_choice2 = distrib(engine);
+                    std::uniform_int_distribution<> distrib(0, 1);
+                    int random_choice2 = wall_choices[distrib(engine)];
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    if(random_choice2 == 0) 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+
                     big_maze.at(random_choice2).at(random_choice) = 'H';
+                    if(random_choice2 == 0) 
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    else if(random_choice2 == (big_size - 1))
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';                    
                 }
                 break;
                 default :

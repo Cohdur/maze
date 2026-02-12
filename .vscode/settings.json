@@ -57,6 +57,11 @@
         "xlocnum": "cpp",
         "xloctime": "cpp",
         "map": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     }
 }

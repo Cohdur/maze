@@ -13,7 +13,7 @@ class Graph
     class ActualVertex {
       public:
         V element;
-        IncidenceMap outgoing;
+        IncidenceMap outgoing; // only utilize this one as it's directed
         IncidenceMap incoming;
         typename std::list<ActualVertex>::iterator pos;   // needed to erase from vertex_list
         ActualVertex(V elem) : element{elem} {}
@@ -22,10 +22,10 @@ class Graph
     //---------- nested ActualEdge class ---------
     class ActualEdge {
       public:
-        ActualVertex* origin;
-        ActualVertex* dest;
-        int weight;
-        E element;
+        ActualVertex* origin; // start char
+        ActualVertex* dest; // end char in between ' ' chars 
+        int weight; // choice in design 1 each 
+        E element; // char?? 
         typename std::list<ActualEdge>::iterator pos;    // needed to erase from edge_list
         ActualEdge(ActualVertex* u, ActualVertex* v, int w, E e)
             : origin{u}, dest{v}, weight{w}, element{e} {}
@@ -36,7 +36,7 @@ class Graph
     //---------- nested Vertex class ---------
     class Vertex {
       private:
-        friend Graph;
+        friend class Graph;
         ActualVertex* vert{nullptr};
         Vertex(const ActualVertex* v) : vert{const_cast<ActualVertex*>(v)} {}
         

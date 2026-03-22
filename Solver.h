@@ -10,6 +10,10 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
     public:
     maze() : Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
 
+    typedef Graph<V,E>::ActualVertex ActualVertex; // utilize IncidenceMap outgoing and incoming to gain mapping  
+    typedef Graph<V,E>::ActualEdge ActualEdge; // This is the pointer for my start and end (first, next, previous??)
+
+    ActualEdge
     private:
 
     typedef Graph<V,E> g;

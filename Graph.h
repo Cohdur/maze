@@ -13,7 +13,7 @@ class Graph
     class ActualVertex {
       public:
         V element;
-        IncidenceMap outgoing; // only utilize this one as it's directed
+        IncidenceMap outgoing; 
         IncidenceMap incoming;
         typename std::list<ActualVertex>::iterator pos;   // needed to erase from vertex_list
         ActualVertex(V elem) : element{elem} {}

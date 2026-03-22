@@ -52,7 +52,7 @@ class Graph
     //---------- nested Edge class ---------
     class Edge {
       private:
-        friend Graph;
+        friend class Graph;
         ActualEdge* edge{nullptr};
         Edge(const ActualEdge* e) : edge{const_cast<ActualEdge*>(e)} {}
         
@@ -102,6 +102,8 @@ class Graph
     }
 
     // Return true if there exists an edge from u to v, false otherwise
+
+    //These two edge functions may come in handy for dead end 
     bool has_edge(Vertex u, Vertex v) const {
         return (u.vert->outgoing.count(v.vert) == 1);
     }
@@ -110,7 +112,8 @@ class Graph
     Edge get_edge(Vertex u, Vertex v) const {
         return Edge(u.vert->outgoing.find(v.vert)->second); // find returns {ActualVertex*,ActualEdge*}
     }
-    
+    ////////////////////////////////////////
+
     // Returns the number of outgoing (or incoming) edges for Vertex v
     int degree(Vertex v, bool outgoing = true) const {
         IncidenceMap& adj(outgoing || !directed ? v.vert->outgoing : v.vert->incoming);
@@ -118,6 +121,7 @@ class Graph
     }
 
     // Returns a list of outgoing (or incoming) Vertex tokens for neighbors of Vertex v
+    // again handy functions for dead end
     std::list<Vertex> neighbors(Vertex v, bool outgoing = true) const {
         std::list<Vertex> result;
         IncidenceMap& adj(outgoing || !directed ? v.vert->outgoing : v.vert->incoming);
@@ -186,6 +190,7 @@ class Graph
         edge_list.erase(e.edge->pos);
     }
 
+    
     // Remove vertex v, and all its incident edges, from the graph
     void erase(Vertex v) {
         for (auto p : v.vert->outgoing) {         // p is {ActualVertex*,ActualEdge*} pair

@@ -5,28 +5,16 @@
 #include<map>
 #include<list>
 #include<memory>
-//#include<queue>
+
 
 
 #include "Graph.h"
 
 using namespace std; // delete after testing 
 
-template<typename V,typename E>
-class maze : public Graph<V, E> // char = character/ board & int is edge weight
+//template<typename V,typename E>
+class maze //: public Graph<V, E> // char = character/ board & int is edge weight
 {
-    public:
-    maze() : Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
-
-    private:
-
-    typedef Graph<V,E> g;
-    typedef typename g::Vertex Vertex;
-    typedef typename g::Edge Edge;
-
-    typedef std::map<typename Graph<V,E>::Vertex, typename Graph<V,E>::Edge> trial;
-
-
 
     const static int size = 4;
     const static int big_size = size * 4;
@@ -39,40 +27,16 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
     // simply assign a pointer to each one per vertex as created in class then assign the open and close as start end
     // each weight is 1 that way from start to end each possible edge is tested with arthimetic math +1 per vertex
     // output the path at the end if found per move update
-    // DIRECTED OR NOT DIRECTED??
+    // DIRECTED 
     std::vector<std::vector<char>> grid
     {
         {'+', '+', '+', '+'},
         {'+', ' ', ' ', '+'},
-        {'+', ' ', ' ', '+'},
+        {'+', ' ', 'Y', '+'},
         {'+', '+', '+', '+'}
     };
 
     public :
-
-
-    class Position : public Graph<V,E>::Vertex
-    {
-        private:
-        
-        Vertex* Start{nullptr};
-        Vertex* End{nullptr};
-        std::shared_ptr<Vertex> pos{nullptr};
-        Position(const typename Graph<V, E>::Vertex* v) : pos{const_cast<typename Graph<V, E>::Vertex*>(v)} {}
-    
-    };
-    
-    class Path : public Graph<V,E>::Edge
-    {
-        private:
-        typename Graph<V,E>::Edge* edge{nullptr};
-        Path(const Edge* e) : edge{const_cast<Edge*>(e)} {}
-    
-    };
-
-    protected :
-    std::list<Vertex> vertices;
-    std::list<Edge> edges;
 
     bool condition = false;
     public : 
@@ -591,30 +555,9 @@ class maze : public Graph<V, E> // char = character/ board & int is edge weight
                 std::cout << std::endl;
             }
             std::cout << std::endl;
-            std::cout << condition << std::endl;
 
         }
     
 
 };
 
-/*
-using namespace std;
-
-int main()
-{
-    maze<char, int> game;
-    
-    game.createMaze();
-    
-    // for sake this is just a test on algorithm I'll refine the maze with multiple calls 
-    game.create_openeings();
-    game.create_openeings();
-    game.create_openeings();
-    game.create_openeings();
-    game.create_openeings();
-    
-    
-    game.output();
-}
-*/

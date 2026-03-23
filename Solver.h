@@ -5,42 +5,39 @@
 
 
 template<typename V,typename E>
-class maze : public Graph<V, E> // char = character/ board & int is edge weight
+class Solver : public Graph<V, E> // char = character/ board & int is edge weight
 {
     public:
-    maze() : Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
+    Solver() : Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
 
     typedef Graph<V,E>::ActualVertex ActualVertex; // utilize IncidenceMap outgoing and incoming to gain mapping  
     typedef Graph<V,E>::ActualEdge ActualEdge; // This is the pointer for my start and end (first, next, previous??)
 
-    ActualEdge
+    maze mazeObj;
+
+    ActualVertex startOrigin = ActualVertex(mazeObj::big_maze.at(mazeObj.getStartIndexRow()).at(mazeObj.getStartIndexCol()));
+    ActualVertex endOrigin = ActualVertex(mazeObj::big_maze.at(mazeObj.getEndIndexRow()).at(mazeObj.getEndIndexCol()));
+
+     
     private:
 
     typedef Graph<V,E> g;
     typedef typename g::Vertex Vertex;
     typedef typename g::Edge Edge;
 
+    // this would need a container plus a way to compare weight per trial then assign lowest to map 
+    // redirect a . that is placed along path for visual representation of path taken
+    // SO NOT SURE IF I WANT TO KEEP THIS TRIAL MAP
     typedef std::map<typename Graph<V,E>::Vertex, typename Graph<V,E>::Edge> trial;
 
-    
-    class Position : public Graph<V,E>::Vertex
-    {
-        private:
-        
-        Vertex* Start{nullptr};
-        Vertex* End{nullptr};
-        std::shared_ptr<Vertex> pos{nullptr};
-        Position(const typename Graph<V, E>::Vertex* v) : pos{const_cast<typename Graph<V, E>::Vertex*>(v)} {}
-    
-    };
-    
-    class Path : public Graph<V,E>::Edge
-    {
-        private:
-        typename Graph<V,E>::Edge* edge{nullptr};
-        Path(const Edge* e) : edge{const_cast<Edge*>(e)} {}
-    
-    };
+    //Change of plans this will be BFS and Dijkstra's algorithm 
+     pathFinder()
+     {
+        for(const auto& i : mazeObj.big_maze)
+        {
+
+        }
+     }
 
     protected :
     std::list<Vertex> vertices;

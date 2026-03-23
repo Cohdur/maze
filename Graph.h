@@ -23,7 +23,7 @@ class Graph
     class ActualEdge {
       public:
         ActualVertex* origin; // start char
-        ActualVertex* dest; // end char in between ' ' chars 
+        ActualVertex* dest; // next char in between ' ' chars 
         int weight; // choice in design 1 each 
         E element; // char?? 
         typename std::list<ActualEdge>::iterator pos;    // needed to erase from edge_list
@@ -89,7 +89,7 @@ class Graph
     std::list<Vertex> vertices() const {
         std::list<Vertex> result;
         for (const ActualVertex& v : vertex_list)      // Note: reference variable to get correct pointer
-            result.push_back(Vertex(&v));
+            result.emplace_back(Vertex(&v));
         return result;
     }
 

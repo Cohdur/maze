@@ -6,43 +6,42 @@
 template<typename V,typename E>
 class Solver //: public Graph<V, E> // char = character/ board & int is edge weight
 {
-    public:
-    Solver() //: Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
+    private:
     
     maze mazeObj;
     Graph<V,E> graphObj{false}; 
-
-    using ActualVertex = typename Graph<V,E>::ActualVertex;
-    using ActualEdge   = typename Graph<V,E>::ActualEdge;
+    
     using Vertex       = typename Graph<V,E>::Vertex;
     using Edge         = typename Graph<V,E>::Edge;
-    using Graph<V,E> graph;
-
-
-    ActualVertex startOrigin = ActualVertex(mazeObj::big_maze.at(mazeObj.getStartIndexRow()).at(mazeObj.getStartIndexCol()));
-    ActualVertex endOrigin = ActualVertex(mazeObj::big_maze.at(mazeObj.getEndIndexRow()).at(mazeObj.getEndIndexCol()));
-
-    protected :
-    std::list<ActualVertex> vertices;
-    std::list<ActualEdge> edges;
-     
-    private:
-
-
+    
+    public:
+    
+    Solver(); //: Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
 
     // this would need a container plus a way to compare weight per trial then assign lowest to map 
     // redirect a . that is placed along path for visual representation of path taken
     // SO NOT SURE IF I WANT TO KEEP THIS TRIAL MAP
-    typedef std::map<typename Graph<V,E>::Vertex, typename Graph<V,E>::Edge> trial;
 
     //Change of plans this will be BFS and Dijkstra's algorithm 
-    pathFinder()
+
+    void Maze()
     {
-        for(const auto& i : mazeObj.big_maze)
+        mazeObj.createMaze();
+        mazeObj.create_openeings();
+        mazeObj.create_openeings();
+        mazeObj.create_openeings();
+        mazeObj.create_openeings();
+
+        mazeObj.output();
+    }
+
+    void pathFinder()
+    {
+        for(const auto& i : mazeObj.getMaze())
         {
             for(const auto& j : i)
             {
-                if(j == ' ')
+                if(j == ' ' || j == 'O' || j == 'H')
                 {
                     graphObj.insert_vertex(j);
                 }
@@ -52,7 +51,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
     int outputVertices()
     {
-        return vertices.size();
+        return graphObj.num_vertices();
     }
 
 };

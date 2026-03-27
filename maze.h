@@ -2,13 +2,10 @@
 #include<iostream>
 #include<ctime>
 #include<random>
-#include<map>
+#include<map> //no longer involved in this file DELETE IN FINAL VERSION
 #include<list>
 #include<memory>
 
-
-
-#include "Graph.h"
 
 using namespace std; // delete after testing 
 
@@ -16,6 +13,7 @@ using namespace std; // delete after testing
 class maze //: public Graph<V, E> // char = character/ board & int is edge weight
 {
 
+    friend class Solver<char, int>;
     const static int size = 4;
     const static int big_size = size * 4;
 

@@ -1,29 +1,34 @@
-#include "Graph.h"
+#include<iostream>
+
 #include "maze.h"
-
-
-
+#include "Graph.h"
 
 template<typename V,typename E>
-class Solver : public Graph<V, E> // char = character/ board & int is edge weight
+class Solver //: public Graph<V, E> // char = character/ board & int is edge weight
 {
     public:
-    Solver() : Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
-
-    typedef Graph<V,E>::ActualVertex ActualVertex; // utilize IncidenceMap outgoing and incoming to gain mapping  
-    typedef Graph<V,E>::ActualEdge ActualEdge; // This is the pointer for my start and end (first, next, previous??)
-
+    Solver() //: Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
+    
     maze mazeObj;
+    Graph<V,E> graphObj{false}; 
+
+    using ActualVertex = typename Graph<V,E>::ActualVertex;
+    using ActualEdge   = typename Graph<V,E>::ActualEdge;
+    using Vertex       = typename Graph<V,E>::Vertex;
+    using Edge         = typename Graph<V,E>::Edge;
+    using Graph<V,E> graph;
+
 
     ActualVertex startOrigin = ActualVertex(mazeObj::big_maze.at(mazeObj.getStartIndexRow()).at(mazeObj.getStartIndexCol()));
     ActualVertex endOrigin = ActualVertex(mazeObj::big_maze.at(mazeObj.getEndIndexRow()).at(mazeObj.getEndIndexCol()));
 
+    protected :
+    std::list<ActualVertex> vertices;
+    std::list<ActualEdge> edges;
      
     private:
 
-    typedef Graph<V,E> g;
-    typedef typename g::Vertex Vertex;
-    typedef typename g::Edge Edge;
+
 
     // this would need a container plus a way to compare weight per trial then assign lowest to map 
     // redirect a . that is placed along path for visual representation of path taken
@@ -31,17 +36,24 @@ class Solver : public Graph<V, E> // char = character/ board & int is edge weigh
     typedef std::map<typename Graph<V,E>::Vertex, typename Graph<V,E>::Edge> trial;
 
     //Change of plans this will be BFS and Dijkstra's algorithm 
-     pathFinder()
-     {
+    pathFinder()
+    {
         for(const auto& i : mazeObj.big_maze)
         {
-
+            for(const auto& j : i)
+            {
+                if(j == ' ')
+                {
+                    graphObj.insert_vertex(j);
+                }
+            }
         }
-     }
+    }
 
-    protected :
-    std::list<Vertex> vertices;
-    std::list<Edge> edges;
+    int outputVertices()
+    {
+        return vertices.size();
+    }
 
 };
 

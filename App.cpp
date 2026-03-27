@@ -6,10 +6,11 @@ using namespace std;
 
 int main()
 {
-    Solver<char,int> game;
+    Solver<int,int> game;
 
     game.Maze();
-    game.outputVertices();
+    game.pathFinder();
+    cout << game.outputVertices();
 
 }
 

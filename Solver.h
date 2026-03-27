@@ -1,5 +1,5 @@
 #include<iostream>
-
+#include<optional>
 #include "maze.h"
 #include "Graph.h"
 
@@ -13,10 +13,13 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     
     using Vertex       = typename Graph<V,E>::Vertex;
     using Edge         = typename Graph<V,E>::Edge;
+
+    protected:
+    std::vector<std::vector<std::optional<Vertex>>> cellToVertex{16, std::vector<std::optional<Vertex>>(16)};
     
     public:
     
-    Solver(); //: Graph<V, E>(false) {} // Explicitly call the base class constructor || There may be circles so not acycle
+    Solver() {};
 
     // this would need a container plus a way to compare weight per trial then assign lowest to map 
     // redirect a . that is placed along path for visual representation of path taken
@@ -31,22 +34,27 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         mazeObj.create_openeings();
         mazeObj.create_openeings();
         mazeObj.create_openeings();
-
+        // maybe add another one if diagnole edgeds are not in the plan 
         mazeObj.output();
     }
 
     void pathFinder()
     {
-        for(const auto& i : mazeObj.getMaze())
+        int row = 16;
+        int col = 16;
+
+        for(auto r = 0; r < row; r++)
         {
-            for(const auto& j : i)
+            for(auto c = 0; c < col; c++)
             {
-                if(j == ' ' || j == 'O' || j == 'H')
+                if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
                 {
-                    graphObj.insert_vertex(j);
+                    int index = r * col + c;
+                    cellToVertex[r][c] = graphObj.insert_vertex(index);
                 }
             }
         }
+        
     }
 
     int outputVertices()

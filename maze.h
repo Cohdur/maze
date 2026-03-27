@@ -20,7 +20,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
 
     int EndIndexRow = -1;
     int endIndexCol =  -1;
-    static std::vector<std::vector<char>> big_maze; 
+    std::vector<std::vector<char>> big_maze; 
     
     public : 
     // changes these to hold vertex or utilize to add value to vertex for edge weight
@@ -28,6 +28,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
     // each weight is 1 that way from start to end each possible edge is tested with arthimetic math +1 per vertex
     // output the path at the end if found per move update
     // DIRECTED 
+    maze() {};
     std::vector<std::vector<char>> grid
     {
         {'+', '+', '+', '+'},

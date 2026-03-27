@@ -151,7 +151,7 @@ class Graph
 
     // Create a new vertex storing given element, and return Vertex token
     Vertex insert_vertex(V elem) {
-        auto iter = vertex_list.insert(vertex_list.end(), ActualVertex(elem));
+        auto iter = vertex_list.emplace(vertex_list.end(), elem);
         iter->pos = iter;             // save new vertex's position within vertex_list
         return Vertex(&*iter);        // wrap the pointer to newly stored ActualVertex
     }

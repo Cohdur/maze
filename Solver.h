@@ -25,7 +25,6 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     // redirect a . that is placed along path for visual representation of path taken
     // SO NOT SURE IF I WANT TO KEEP THIS TRIAL MAP
 
-    //Change of plans this will be BFS and Dijkstra's algorithm 
 
     void Maze()
     {
@@ -34,10 +33,14 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         mazeObj.create_openeings();
         mazeObj.create_openeings();
         mazeObj.create_openeings();
+        mazeObj.create_openeings();
         // maybe add another one if diagnole edgeds are not in the plan 
         mazeObj.output();
     }
 
+    //Working a on the idea of index per vertex given the placement of vertex within the graph 
+    // Diagnole moves require this to be Dijkstra's and not BFS as it's weights different 1 or sqrt(2) 
+    // this means that the edge should use a double and not an int for the weight 
     void pathFinder()
     {
         int row = 16;

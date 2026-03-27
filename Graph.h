@@ -24,10 +24,10 @@ class Graph
       public:
         ActualVertex* origin; // start char
         ActualVertex* dest; // next char in between ' ' chars 
-        int weight; // choice in design 1 each 
-        E element; // char?? 
+        double weight; // choice in design 1 each instead I am using double for diagnole moves which are sqrt(2)
+        E element; //  
         typename std::list<ActualEdge>::iterator pos;    // needed to erase from edge_list
-        ActualEdge(ActualVertex* u, ActualVertex* v, int w, E e)
+        ActualEdge(ActualVertex* u, ActualVertex* v, double w, E e)
             : origin{u}, dest{v}, weight{w}, element{e} {}
     }; //---------- end of ActualEdge class ---------
 
@@ -159,7 +159,7 @@ class Graph
     // Inserts new edge from u to v, storing given element, and given weight (default 1)
     // If edge already exists, updates weight and element for that existing edge.
     // Returns Edge token
-    Edge insert_edge(Vertex u, Vertex v, int weight = 1, E elem = E()) {
+    Edge insert_edge(Vertex u, Vertex v, double weight = 1.0, E elem = E()) {
         if (u.vert->outgoing.count(v.vert) == 0) {  // new edge
             auto iter = edge_list.insert(edge_list.end(), ActualEdge(u.vert, v.vert, weight, elem));
             iter->pos = iter;                   // save new edge's position within edge_list

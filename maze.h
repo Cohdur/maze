@@ -176,6 +176,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
     }
             
         }
+        
         void createMaze()
         {
 
@@ -204,8 +205,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     }
                 }
             }
-            // random_choice is already assigned a value so to mimnimize token usage it's called once here
-            // the other index values are seperately assigned within the switch statement per call. 
+            // most likely delete in the end not being used. 
              StartIndexRow = random_choice;
              endIndexCol = random_choice;
 
@@ -219,13 +219,56 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::mt19937 engine(rd());
                     std::uniform_int_distribution<> distrib(0, big_size - 1);
                     int random_choice2 = distrib(engine);
+
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    big_maze.at(random_choice + 1).at(random_choice2) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
+                        big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
+                    else if(random_choice2 == (big_size - 1))
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
                     StartIndexCol = random_choice2;
-
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    big_maze.at(random_choice2).at(random_choice + 1) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
+                    else if(random_choice2 == (big_size - 1))
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
 
                     EndIndexRow = random_choice2;
                     
@@ -241,18 +284,54 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
                     StartIndexCol = random_choice2;
                         
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
 
                     EndIndexRow = random_choice2;
                     
@@ -268,19 +347,54 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
 
                     EndIndexRow = random_choice2;
                                                 
@@ -296,20 +410,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';   
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -324,20 +473,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -352,20 +536,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' '; 
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -380,20 +599,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' '; 
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' '; 
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                  
                 }
@@ -408,20 +662,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -436,20 +725,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' '; 
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                  
                 }
@@ -464,20 +788,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';  
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                  
                 }
@@ -492,20 +851,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' '; 
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                  
                 }
@@ -520,20 +914,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-                        
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' '; 
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                  
                 }
@@ -548,20 +977,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -576,20 +1040,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                         
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -604,20 +1103,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' '; 
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                        
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -632,20 +1166,55 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
-                    if(random_choice2 == 0) 
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 + 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 + 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        else 
                         big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                        big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
-
+                    {
+                    while(big_maze.at(random_choice).at(random_choice2 - 1) != 'H' 
+                    && big_maze.at(random_choice).at(random_choice2 - 1) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        else 
+                       big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                    }
+                    }
                     
-                    StartIndexCol = random_choice2;                         
-
+                    StartIndexCol = random_choice2;
+                        
                     big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0) 
-                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    if(random_choice2 == 0)
+                    {
+                    while(big_maze.at(random_choice2 + 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 + 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                    }
+                    } 
                     else if(random_choice2 == (big_size - 1))
-                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
-                            
+                    {
+                    while(big_maze.at(random_choice2 - 1).at(random_choice) != 'O' 
+                    && big_maze.at(random_choice2 - 1).at(random_choice) != ' ')
+                    {
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
+                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        else 
+                       big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                    }
+                    }
+
                     EndIndexRow = random_choice2;
                                                 
                 }

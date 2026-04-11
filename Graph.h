@@ -103,7 +103,6 @@ class Graph
 
     // Return true if there exists an edge from u to v, false otherwise
 
-    //These two edge functions may come in handy for dead end 
     bool has_edge(Vertex u, Vertex v) const {
         return (u.vert->outgoing.count(v.vert) == 1);
     }

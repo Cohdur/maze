@@ -11,6 +11,7 @@ int main()
     game.Maze();
     game.pathFinder();
     cout << game.outputVertices();
+    //game.outputEdgeCheck();
 
 }
 

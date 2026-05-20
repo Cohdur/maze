@@ -3,6 +3,8 @@
 #include "maze.h"
 #include "Graph.h"
 
+using namespace std;
+
 template<typename V,typename E>
 class Solver //: public Graph<V, E> // char = character/ board & int is edge weight
 {
@@ -27,19 +29,18 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
     bool CheckCellFromVectorListofVertices(int row, int col)
     {
-        if(cellToVertex.at(row).at(col).has_value())
-        {
-            return true;
-        }
-        return false;
+        if (row < 0 || col < 0 || row >= static_cast<int>(cellToVertex.size())
+            || col >= static_cast<int>(cellToVertex[0].size()))
+            return false;
+        return cellToVertex.at(row).at(col).has_value();
     }
 
     void Maze()
     {
         mazeObj.createMaze();
-        mazeObj.create_openeings();
+        
+        //mazeObj.create_openeings();
 
-        // maybe add another one if diagnole edgeds are not in the plan 
         mazeObj.output();
     }
 
@@ -68,8 +69,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     void createEdges()
     {
         // this is based on the maze size dimensions 
-        int row = 16;
-        int col = 16;
+        int row = mazeObj.getMaze().size();
+        int col = mazeObj.getMaze().at(0).size();
 
         for(auto r = 0; r < row; r++)
         {
@@ -104,35 +105,37 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     }
 
     void outputEdgeCheck()
-    {
-        for(auto r = 0; r < cellToVertex.size(); r++)
+    { cout << graphObj.num_edges() << endl;
+        /*
+        for(auto r = 0; r < 16; r++)
         {
-            for(auto c = 0; c < cellToVertex[r].size(); c++)
+            for(auto c = 0; c < 16; c++)
             {
-                if(r > 0 && (cellToVertex[r][c].has_value() && cellToVertex[r-1][c].has_value()) 
-                && graphObj.has_edge(cellToVertex[r][c].value(), cellToVertex[r - 1][c].value()) == true)
+                cout << boolalpha << CheckCellFromVectorListofVertices(r,c) << endl;
+                if(CheckCellFromVectorListofVertices(r,c))
                 {
-                    std::cout << "A Edge exists between (" << r << "," << c << ") and (" << (r-1) << "," << c << ")" << std::endl;
+                    cout << "origin vertex; " << *cellToVertex.at(r).at(c).value() << endl;
+                    if(CheckCellFromVectorListofVertices(r - 1, c))
+                    {
+                        cout << "edge to vertex above: " << *cellToVertex.at(r - 1).at(c).value() << endl;
+                    }
+                    if(CheckCellFromVectorListofVertices(r + 1, c))
+                    {
+                        cout << "edge to vertex below: " << *cellToVertex.at(r + 1).at(c).value() << endl;
+                    }
+                    if(CheckCellFromVectorListofVertices(r, c - 1))
+                    {
+                        cout << "edge to vertex left: " << *cellToVertex.at(r).at(c - 1).value() << endl;
+                    }
+                    if(CheckCellFromVectorListofVertices(r, c + 1))
+                    {
+                        cout << "edge to vertex right: " << *cellToVertex.at(r).at(c + 1).value() << endl;
+                    }
                 }
-                if(r < cellToVertex.size() && (cellToVertex[r][c].has_value() && cellToVertex[r+1][c].has_value()) 
-                &&  graphObj.has_edge(cellToVertex[r][c].value(), cellToVertex[r + 1][c].value()) == true)
-                {
-                    std::cout << "B Edge exists between (" << r << "," << c << ") and (" << (r+1) << "," << c << ")" << std::endl;
-                }
-                if(c > 0 && (cellToVertex[r][c].has_value() && cellToVertex[r][c-1].has_value()) 
-                &&  graphObj.has_edge(cellToVertex[r][c].value(), cellToVertex[r][c - 1].value()) == true)
-                {
-                    std::cout << "C Edge exists between (" << r << "," << c << ") and (" << r << "," << (c-1) << ")" << std::endl;
-                }
-                if(c < cellToVertex.size() && (cellToVertex[r][c].has_value() && cellToVertex[r][c+1].has_value()) 
-                &&  graphObj.has_edge(cellToVertex[r][c].value(), cellToVertex[r][c + 1].value()) == true)
-                {
-                    std::cout << "D Edge exists between (" << r << "," << c << ") and (" << r << "," << (c+1) << ")" << std::endl;
-                }
-
+                
             }
         }
-        
+        */
     }
 
 };

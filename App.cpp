@@ -9,10 +9,10 @@ int main()
     Solver<int,int> game;
 
     game.Maze();
-    //game.pathFinder();
-    //cout << game.outputVertices() << endl;
-    //game.createEdges();
-    //game.outputEdgeCheck();
+    game.pathFinder();
+    cout << game.outputVertices() << endl;
+    game.createEdges();
+    game.outputEdgeCheck();
 
 }
 

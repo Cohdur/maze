@@ -39,7 +39,10 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     {
         mazeObj.createMaze();
         
-        //mazeObj.create_openeings();
+        for(auto x = 0; x < 15; x++)
+        {
+            mazeObj.create_openeings();
+        }
 
         mazeObj.output();
     }
@@ -65,7 +68,6 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }
         }
     }
-
     void createEdges()
     {
         // this is based on the maze size dimensions 
@@ -99,11 +101,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         }
     }
 
+    // TESTER FOR FUNCTION TO BE WORKING PROPERLY 
     int outputVertices()
     {
         return graphObj.num_vertices();
     }
-
     void outputEdgeCheck()
     { cout << graphObj.num_edges() << endl;
         /*
@@ -137,7 +139,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         }
         */
     }
-
+    //////////////////////////////////////////
 };
 
 //reference table for graph 

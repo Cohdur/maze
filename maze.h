@@ -42,9 +42,12 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
         // Unless there is a cleaner way simple accessor functions for now to be used in solver class
         bool isValid(const std::vector<std::vector<char>>& big_maze, int row, int col) const
         {
-            return row < 0 && row > static_cast<int>(big_maze.size()) &&
-                   col < 0 && col > static_cast<int>(big_maze[0].size());
-                   // maybe use a throw exception for more detail in the future 
+            if(row == 1 || row == 15 && col == 1 || col == 15)
+            {
+               return true;
+            }
+            // maybe use a throw exception for more detail in the future 
+            return false;
                    
         }
         int getStartIndexRow()
@@ -67,6 +70,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
         {
             return big_maze;
         }
+        
         void create_openeings()
         {
             std::random_device rd;
@@ -75,117 +79,61 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
 
             int random_choice = distrib(engine);
             int random_choice2 = distrib(engine);
-            for(auto i : big_maze)
-            {
-                
-
-            if(big_maze.at(random_choice).at(random_choice2) == '+')
-            {
-                int n = 1;
-                if(big_maze.at(random_choice + n).at(random_choice2) == '+')
-                {
-                    //big_maze.at(random_choice + n).at(random_choice2) = ' ';
-
-                    while(big_maze.at(random_choice).at(random_choice2) != ' ')
-                    {
-                        if( big_maze.at(random_choice + n).at(random_choice2) == ' ')
-                        {
-                            /*
-                            if(big_maze.at(random_choice).at(random_choice2) == '+')
-                            big_maze.at(random_choice).at(random_choice2) = ' ';
-                            */
-                            
-                            break;
-                        }else
-                        big_maze.at(random_choice + n).at(random_choice2) = ' ';
-                        n++;
-                        //break;
-                    }
-                }
-                else if(big_maze.at(random_choice - n).at(random_choice2) == '+')
-                {
-                    big_maze.at(random_choice - n).at(random_choice2) = ' ';
-    
-                    //same
-                    while(big_maze.at(random_choice).at(random_choice2) != ' ' /*&& 
-                    random_choice != 2 && random_choice != big_size - 3 ||
-                    random_choice2 != 2 && random_choice2 != big_size - 3*/)
-                    {
-                        if( big_maze.at(random_choice + n ).at(random_choice2) == ' ')
-                        {
-                            /*
-                            if(big_maze.at(random_choice).at(random_choice2) == '+')
-                            big_maze.at(random_choice).at(random_choice2) = ' ';
-                            */
-                            
-                            break;
-                        }else
-                        big_maze.at(random_choice + n).at(random_choice2) = ' ';
-                        n++;
-                        //break;
-                    }
-                }
-                else if(big_maze.at(random_choice).at(random_choice2 + 1) == '+')
-                {
-                    big_maze.at(random_choice).at(random_choice2 + n) = ' ';
-
-                    //same
-                    while(big_maze.at(random_choice).at(random_choice2 ) != ' ' /*&& 
-                    random_choice != 2 && random_choice != big_size - 3 ||
-                    random_choice2 != 2 && random_choice2 != big_size - 3*/)
-                    {
-                        if( big_maze.at(random_choice).at(random_choice2 + n) == ' ')
-                        {
-                            /*
-                            if(big_maze.at(random_choice).at(random_choice2) == '+')
-                            big_maze.at(random_choice).at(random_choice2) = ' ';
-                            */
-                            
-                            break;
-                        }else
-                        big_maze.at(random_choice).at(random_choice2 + n) = ' ';
-                        n++;
-                        //break;
-                    }
-                }
-                else if(big_maze.at(random_choice).at(random_choice2 - n) == '+')
-                {
-                    big_maze.at(random_choice).at(random_choice2 - n) = ' ';
-
-                    while(big_maze.at(random_choice).at(random_choice2 ) != ' ' /*&& 
-                    random_choice != 2 && random_choice != big_size - 3 ||
-                    random_choice2 != 2 && random_choice2 != big_size - 3*/)
-                    {
-                        if( big_maze.at(random_choice).at(random_choice2 - n) == ' ')
-                        {
-                            /*
-                            if(big_maze.at(random_choice).at(random_choice2) == '+')
-                            big_maze.at(random_choice).at(random_choice2) = ' ';
-                            */
-                            
-                            break;
-                        }else
-                        big_maze.at(random_choice).at(random_choice2 - n) = ' ';
-                        n++;
-                        //break;
-                    }
-                }
-                big_maze.at(random_choice).at(random_choice2) = ' ';
-
-                //std::cout << n << std::endl; // erase + delete breaks 
-            }
-
-            else 
-            {
-                while(big_maze.at(random_choice).at(random_choice2) != '+')
-                {
-                    random_choice = distrib(engine);
-                    random_choice2 = distrib(engine);
-                } 
             
+            for(int i = 0; i < big_size; i++)
+            {
+                for(int j = 0; j < big_size; j++)
+                {
+                    if(big_maze.at(random_choice).at(random_choice2) == '+')
+                    {
+                        if(big_maze.at(random_choice - 1).at(random_choice2) == '+')
+                        {
+                            big_maze.at(random_choice - 1).at(random_choice2) = ' ';
+                        }
+                        if(big_maze.at(random_choice + 1).at(random_choice2) == '+')
+                        {
+                            big_maze.at(random_choice + 1).at(random_choice2) = ' ';
+                        }
+                        if(big_maze.at(random_choice).at(random_choice2 - 1) == '+')
+                        {
+                            big_maze.at(random_choice).at(random_choice2 - 1) = ' ';
+                        }
+                        if(big_maze.at(random_choice).at(random_choice2 + 1) == '+')
+                        {
+                            big_maze.at(random_choice).at(random_choice2 + 1) = ' ';
+                        }
+                    }
+                    else if(big_maze.at(random_choice2).at(random_choice) == '+')
+                    {
+                        if(big_maze.at(random_choice2 - 1).at(random_choice) == '+')
+                        {
+                            big_maze.at(random_choice2 - 1).at(random_choice) = ' ';
+                        }
+                        if(big_maze.at(random_choice2 + 1).at(random_choice) == '+')
+                        {
+                            big_maze.at(random_choice2 + 1).at(random_choice) = ' ';
+                        }
+                        if(big_maze.at(random_choice2).at(random_choice - 1) == '+')
+                        {
+                            big_maze.at(random_choice2).at(random_choice - 1) = ' ';
+                        }
+                        if(big_maze.at(random_choice2).at(random_choice + 1) == '+')
+                        {
+                            big_maze.at(random_choice2).at(random_choice + 1) = ' ';
+                        }
+                    }
+                    else if(big_maze.at(random_choice2).at(random_choice) == ' ' 
+                    || big_maze.at(random_choice).at(random_choice2) == ' ')
+                    {
+                        while(big_maze.at(random_choice).at(random_choice2) != '+' 
+                        || big_maze.at(random_choice2).at(random_choice) != '+')
+                        {
+                            random_choice = distrib(engine);
+                            random_choice2 = distrib(engine);
+                        }
+                    }
+                }
             }
-        
-    }
             
         }
         
@@ -194,7 +142,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
 
             std::random_device rd;
             std::mt19937 engine(rd());
-            std::uniform_int_distribution<> distrib(1, big_size - 2); //changed lower bound to 1 and upper bound to - 2 instead of - 1
+            std::uniform_int_distribution<> distrib(1, big_size - 1); //changed lower bound to 1 and upper bound to - 2 instead of - 1
             
             int random_choice = distrib(engine);
             //int random_choice = Grid_choices[distrib(engine)];
@@ -224,8 +172,8 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
             //Just assigning a start which needs to be root/first vertex assigned for algorithm -> exit 'H'
             switch(random_choice)
             {
+                
                 /*
-                // I might just change it to 1 being the lowest due to corners 
                 case 0 : 
                 {
                     std::random_device rd;
@@ -234,13 +182,13 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = distrib(engine);
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 1)
+                big_maze.at(random_choice2).at(random_choice) = 'H';
                     {
-                    while((big_maze.at(random_choice).at(random_choice2) != big_maze.end()) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'H' )
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         
                         random_choice++;
@@ -251,27 +199,23 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         
-                        random_choice++;
+                        random_choice--;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
                          
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     if(random_choice2 == 1)
                     {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
+                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' )
                     {
-                        if(big_maze.at(random_choice2 + 1).at(random_choice) == ' ' 
-                        || big_maze.at(random_choice2 + 1).at(random_choice) == 'O') break;
+                        if(random_choice + 1 == 16) break;
                      
                         random_choice++;
                         //random_choice2++;
@@ -281,14 +225,12 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
+                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' )
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                        if(random_choice - 1 == 0) break;
                         else
                         
-                        random_choice++;
+                        random_choice--;
                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
@@ -308,60 +250,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break; // this might work out as they move at the same rate
                         else 
                         random_choice2++;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                         //random_choice++; 
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H'
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else 
                         random_choice2--;
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                        random_choice2++;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                        random_choice2--;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
-
+                   
                     EndIndexRow = random_choice2;
                     
                 }
@@ -376,59 +294,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
                         cout << isValid(big_maze, random_choice, random_choice2) << endl;
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else 
                         random_choice2++;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else 
                         random_choice2--;
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                        random_choice2++;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                        random_choice2--;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
+                    
 
                     EndIndexRow = random_choice2;
                                                 
@@ -443,59 +338,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else 
                         random_choice2++;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--;
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2++; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                        random_choice2--;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
+                    
 
                     EndIndexRow = random_choice2;
                                                 
@@ -510,59 +382,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++; 
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else 
                         random_choice2--;
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                        random_choice2++;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                        random_choice2--;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
+                    
 
                     EndIndexRow = random_choice2;
                                                 
@@ -578,61 +427,37 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     int random_choice2 = wall_choices[distrib(engine)];
 
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
                         
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else 
                             random_choice2++;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
                         
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--; 
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2++;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
-
+                    
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -646,60 +471,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else 
                             random_choice2++;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--;
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                            random_choice2++;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
-
+                       
                     EndIndexRow = random_choice2;
                                                  
                 }
@@ -713,59 +514,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--; 
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                            random_choice2++;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else 
-                        random_choice2--;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
+                    
 
                     EndIndexRow = random_choice2;
                                                 
@@ -780,59 +558,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--;
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                            random_choice2++;
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
+                    
 
                     EndIndexRow = random_choice2;
                                                  
@@ -847,60 +602,37 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++; 
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--; 
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2++; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
-
+                    
+                
                     EndIndexRow = random_choice2;
                                                  
                 }
@@ -914,59 +646,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++; 
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--; 
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2++; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
+                    
 
                     EndIndexRow = random_choice2;
                                                  
@@ -981,59 +690,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++; 
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--; 
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2++; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
+                    
 
                     EndIndexRow = random_choice2;
                                                  
@@ -1048,60 +734,37 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++; 
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--; 
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2++; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
-
+                    
+                
                     EndIndexRow = random_choice2;
                                                 
                 }
@@ -1115,59 +778,36 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++; 
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--; 
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2++; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
+                    
 
                     EndIndexRow = random_choice2;
                                                 
@@ -1182,65 +822,42 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0,1);
                     int random_choice2 = wall_choices[distrib(engine)];
 
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else
                         random_choice2++; 
                         big_maze.at(random_choice).at(random_choice2) = ' ';
+                        big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     } 
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else
                         random_choice2--; 
                        big_maze.at(random_choice).at(random_choice2) = ' ';
+                       big_maze.at(random_choice2).at(random_choice) = ' ';
                     }
                     }
                     
                     StartIndexCol = random_choice2;
-                        
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
-                    if(random_choice2 == 0)
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2 ).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2++; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    } 
-                    else if(random_choice2 == (big_size - 1))
-                    {
-                    while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
-                    && big_maze.at(random_choice2).at(random_choice) != ' ')
-                    {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
-                        else
-                        random_choice2--; 
-                       big_maze.at(random_choice2).at(random_choice) = ' ';
-                    }
-                    }
-
+                     
+                
                     EndIndexRow = random_choice2;
                                                 
                 }
                 break;
-                /* Again corner issue with this one same as case 0 
+                /* possibly try test running this 
                 case 15 :
                 {
                 
@@ -1250,14 +867,15 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     std::uniform_int_distribution<> distrib(0, 1);
                     int random_choice2 = wall_choices[distrib(engine)];
                     
+                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     big_maze.at(random_choice).at(random_choice2) = 'O';
+                    
                     if(random_choice2 == 0)
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 + 1) == 'H') break;
+                        if(random_choice2 + 1 == 15) break;
                         else 
                         random_choice2++;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
@@ -1266,10 +884,9 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     else if(random_choice2 == (big_size - 1))
                     {
                     while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice).at(random_choice2) != 'H' 
-                    && big_maze.at(random_choice).at(random_choice2) != ' ')
+                    || big_maze.at(random_choice2).at(random_choice) != 'O')
                     {
-                        if(big_maze.at(random_choice).at(random_choice2 - 1) == ' ' 
-                        || big_maze.at(random_choice).at(random_choice2 - 1) == 'H') break;
+                        if(random_choice2 - 1 == 0) break;
                         else 
                         random_choice2--;
                         big_maze.at(random_choice).at(random_choice2) = ' ';
@@ -1278,14 +895,12 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                     
                     StartIndexCol = random_choice2;
                     
-                    big_maze.at(random_choice2).at(random_choice) = 'H';
                     if(random_choice2 == 0)
                     {
                         while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
                         && big_maze.at(random_choice2 ).at(random_choice) != ' ')
                         {
-                            if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                            || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                            if(random_choice2 + 1 == 15) break;
                             else
                             random_choice2++; 
                             big_maze.at(random_choice2).at(random_choice) = ' ';
@@ -1296,8 +911,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                         while((isValid(big_maze, random_choice, random_choice2)) && big_maze.at(random_choice2).at(random_choice) != 'O' 
                         && big_maze.at(random_choice2).at(random_choice) != ' ')
                         {
-                            if(big_maze.at(random_choice).at(random_choice2 + 1) == ' ' 
-                            || big_maze.at(random_choice).at(random_choice2 + 1) == 'O') break;
+                            if(random_choice2 - 1 == 0) break;
                             else
                         random_choice2--; 
                         big_maze.at(random_choice2).at(random_choice) = ' ';
@@ -1309,7 +923,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
                 
             }
             break;
-            */
+                */
                 default :
                 std::cout << "Maze generator operation didn't work " << std::endl;
                 break;

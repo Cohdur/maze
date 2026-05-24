@@ -107,37 +107,25 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         return graphObj.num_vertices();
     }
     void outputEdgeCheck()
-    { cout << graphObj.num_edges() << endl;
-        /*
-        for(auto r = 0; r < 16; r++)
+    { 
+        cout << graphObj.num_edges() << endl;
+    }
+    void outputTheWrappedList()
+    {
+        
+    }
+    void outputCells()
+    {
+        for(auto r = 0; r < cellToVertex.size(); r++)
         {
-            for(auto c = 0; c < 16; c++)
+            for(auto c = 0; c < cellToVertex.at(0).size(); c++)
             {
-                cout << boolalpha << CheckCellFromVectorListofVertices(r,c) << endl;
-                if(CheckCellFromVectorListofVertices(r,c))
+                if(cellToVertex.at(r).at(c).has_value())
                 {
-                    cout << "origin vertex; " << *cellToVertex.at(r).at(c).value() << endl;
-                    if(CheckCellFromVectorListofVertices(r - 1, c))
-                    {
-                        cout << "edge to vertex above: " << *cellToVertex.at(r - 1).at(c).value() << endl;
-                    }
-                    if(CheckCellFromVectorListofVertices(r + 1, c))
-                    {
-                        cout << "edge to vertex below: " << *cellToVertex.at(r + 1).at(c).value() << endl;
-                    }
-                    if(CheckCellFromVectorListofVertices(r, c - 1))
-                    {
-                        cout << "edge to vertex left: " << *cellToVertex.at(r).at(c - 1).value() << endl;
-                    }
-                    if(CheckCellFromVectorListofVertices(r, c + 1))
-                    {
-                        cout << "edge to vertex right: " << *cellToVertex.at(r).at(c + 1).value() << endl;
-                    }
+                    cout << "Row: " << r << " Col: " << c << " Vertex Index: " << *cellToVertex.at(r).at(c).value() << endl;
                 }
-                
             }
         }
-        */
     }
     //////////////////////////////////////////
 };

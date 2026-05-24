@@ -10,10 +10,9 @@ int main()
 
     game.Maze();
     game.pathFinder();
-    cout << game.outputVertices() << endl;
-    game.createEdges();
-    game.outputEdgeCheck();
+    //cout << game.outputVertices() << endl;
+    //game.createEdges();
+    //game.outputEdgeCheck();
+    //game.outputTheWrappedList();
 
 }
-
-// reference table for 

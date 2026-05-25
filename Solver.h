@@ -22,7 +22,15 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     public:
     
     Solver() {};
+    // key index for path finder
+    int rowForStart;
+    int colForStart;
+    int IndexKeyForStart;
 
+    int rowForEnd;
+    int colForEnd;
+    int IndexKeyForEnd;
+    
     // this would need a container plus a way to compare weight per trial then assign lowest to map 
     // redirect a . that is placed along path for visual representation of path taken
     // SO NOT SURE IF I WANT TO KEEP THIS TRIAL MAP
@@ -63,6 +71,18 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
                 {
                     int index = r * col + c;
+                    if(mazeObj.getMaze().at(r).at(c) == 'H')
+                    {
+                        rowForEnd = r;
+                        colForEnd = c;
+                        IndexKeyForEnd = index;
+                    }
+                    if(mazeObj.getMaze().at(r).at(c) == 'O')
+                    {
+                        rowForStart = r;
+                        colForStart = c;
+                        IndexKeyForStart = index;
+                    }
                     cellToVertex[r][c] = graphObj.insert_vertex(index);
                 }
             }
@@ -100,7 +120,10 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }
         }
     }
-
+    void FindPath()
+    {
+        
+    }
     // TESTER FOR FUNCTION TO BE WORKING PROPERLY 
     int outputVertices()
     {
@@ -110,9 +133,25 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     { 
         cout << graphObj.num_edges() << endl;
     }
-    void outputTheWrappedList()
-    {
-        
+    
+    int degreeOfVertex()
+    { int n = 0;
+        for(auto i : cellToVertex)
+        {
+            for(auto j : i)
+            {
+                if(j.has_value())
+                {
+                    if(n == cellToVertex.size() - 10)
+                    {
+                        cout << "Index " << *j.value() << endl;
+                        return graphObj.degree(j.value());
+                    }
+                    n++;
+                }
+            }
+        }
+        return 0;
     }
     void outputCells()
     {

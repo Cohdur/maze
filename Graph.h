@@ -22,9 +22,9 @@ class Graph
     //---------- nested ActualEdge class ---------
     class ActualEdge {
       public:
-        ActualVertex* origin; // start char
-        ActualVertex* dest; // next char in between ' ' chars 
-        double weight; // choice in design 1 each instead I am using double for diagnole moves which are sqrt(2)
+        ActualVertex* origin; 
+        ActualVertex* dest; 
+        double weight; 
         E element; //  
         typename std::list<ActualEdge>::iterator pos;    // needed to erase from edge_list
         ActualEdge(ActualVertex* u, ActualVertex* v, double w, E e)

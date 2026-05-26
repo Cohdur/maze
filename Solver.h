@@ -18,7 +18,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
     protected:
     std::vector<std::vector<std::optional<Vertex>>> cellToVertex{16, std::vector<std::optional<Vertex>>(16)};
-    
+    list<Edge> createdPath;
     public:
     
     Solver() {};
@@ -83,11 +83,14 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         colForStart = c;
                         IndexKeyForStart = index;
                     }
-                    cellToVertex[r][c] = graphObj.insert_vertex(index);
+                        // this is for the open spaces that are not start or end 
+                        cellToVertex[r][c] = graphObj.insert_vertex(index);
+                    
                 }
             }
         }
     }
+    // technically this is a extra step based on current design as I should've done the findPath() operation in this one 
     void createEdges()
     {
         // this is based on the maze size dimensions 
@@ -120,9 +123,46 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }
         }
     }
+
     void FindPath()
     {
-        
+        list<Edge> path = graphObj.edges();
+        double weight = 1;
+        for(auto i : cellToVertex)
+        {
+            for(auto j : i)
+            {
+                if(j.has_value())
+                {
+                    
+                    if(createdPath.empty() && graphObj.has_edge(cellToVertex[rowForStart][colForStart].value(), j.value()))
+                    {
+                        createdPath.push_back(graphObj.insert_edge(cellToVertex[rowForStart][colForStart].value(), j.value(), 
+                        weight + 1.0));  
+                    }
+                    if(!createdPath.empty())
+                    {
+                        if(j.value() == cellToVertex[rowForEnd][colForEnd].value())
+                        {
+                            createdPath.push_back(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value(), weight + 1.0));
+                            break;
+                        }
+                        if(graphObj.has_edge(j.value(), graphObj.endpoints(createdPath.back()).second))
+                        {
+                            createdPath.push_back(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value(), weight + 1.0));
+                        }
+
+                    }
+                }
+            }
+        }
+         // this is where I would implement Dijkstra's to find the lowest weight path from start to end and then assign that path to a list of edges that I can then output at the end 
+         // this is also where I would update the maze with the . for visual representation of the path taken
+        for(auto i : createdPath)
+        {
+            cout << "Edge from " << *graphObj.endpoints(i).first << " to " << *graphObj.endpoints(i).second << " with weight " << i.weight() << endl;
+        }
+        cout << createdPath.size() << endl;
     }
     // TESTER FOR FUNCTION TO BE WORKING PROPERLY 
     int outputVertices()

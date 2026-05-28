@@ -30,7 +30,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     int rowForEnd;
     int colForEnd;
     int IndexKeyForEnd;
-    
+    double weight = 1;
     // this would need a container plus a way to compare weight per trial then assign lowest to map 
     // redirect a . that is placed along path for visual representation of path taken
     // SO NOT SURE IF I WANT TO KEEP THIS TRIAL MAP
@@ -127,37 +127,33 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     void FindPath()
     {
         list<Edge> path = graphObj.edges();
-        double weight = 1;
+        
         for(auto i : cellToVertex)
         {
             for(auto j : i)
             {
                 if(j.has_value())
                 {
-                    
-                    if(createdPath.empty() && graphObj.has_edge(cellToVertex[rowForStart][colForStart].value(), j.value()))
+                    if(j.value() == cellToVertex[rowForStart][colForStart].value())
                     {
-                        createdPath.push_back(graphObj.insert_edge(cellToVertex[rowForStart][colForStart].value(), j.value(), 
-                        weight + 1.0));  
+                        createdPath.push_front(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value()));
                     }
-                    if(!createdPath.empty())
+                    if(j.value() == cellToVertex[rowForEnd][colForEnd].value())
                     {
-                        if(j.value() == cellToVertex[rowForEnd][colForEnd].value())
-                        {
-                            createdPath.push_back(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value(), weight + 1.0));
-                            break;
-                        }
-                        if(graphObj.has_edge(j.value(), graphObj.endpoints(createdPath.back()).second))
-                        {
-                            createdPath.push_back(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value(), weight + 1.0));
-                        }
-
+                        createdPath.push_back(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value()));
+                        break;
                     }
-                }
+                    if(graphObj.has_edge(j.value(), graphObj.endpoints(createdPath.back()).second))
+                    {
+                        createdPath.push_back(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value()));
+                    }       
+                }   
             }
         }
+    
          // this is where I would implement Dijkstra's to find the lowest weight path from start to end and then assign that path to a list of edges that I can then output at the end 
          // this is also where I would update the maze with the . for visual representation of the path taken
+         
         for(auto i : createdPath)
         {
             cout << "Edge from " << *graphObj.endpoints(i).first << " to " << *graphObj.endpoints(i).second << " with weight " << i.weight() << endl;

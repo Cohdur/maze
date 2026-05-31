@@ -18,6 +18,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
     protected:
     std::vector<std::vector<std::optional<Vertex>>> cellToVertex{16, std::vector<std::optional<Vertex>>(16)};
+    // Maybe delete in final form 
     list<Edge> createdPath;
     public:
     
@@ -54,7 +55,10 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
         mazeObj.output();
     }
-
+    void outputmaze()
+    {
+        mazeObj.output();
+    }
     //Working a on the idea of index per vertex given the placement of vertex within the graph 
     // Diagnole moves require this to be Dijkstra's and not BFS as it's weights different 1 or sqrt(2) 
     // this means that the edge should use a double and not an int for the weight 
@@ -90,7 +94,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }
         }
     }
-    // technically this is a extra step based on current design as I should've done the findPath() operation in this one 
+    
     void createEdges()
     {
         // this is based on the maze size dimensions 
@@ -123,43 +127,109 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }
         }
     }
-
     void FindPath()
     {
-        list<Edge> path = graphObj.edges();
-        
-        for(auto i : cellToVertex)
+        const list<Edge>& pathListA = graphObj.edges();
+        list<Edge> PathListB;
+        bool done = false;
+        while(/*!done*/ PathListB.size() < 20)
         {
-            for(auto j : i)
-            {
-                if(j.has_value())
+
+            for(auto i : pathListA)
+            {   
+                if(PathListB.empty() && graphObj.endpoints(i).first == cellToVertex[rowForStart][colForStart].value())
                 {
-                    if(j.value() == cellToVertex[rowForStart][colForStart].value())
+                    cout << "TESTER A" << endl;
+                    PathListB.push_back(i);
+                    //graphObj.erase(graphObj.endpoints(i).first);
+                }else if(!PathListB.empty())
+                {
+                    
+                    cout << "TESTER B" << endl;
+                    for(auto j : graphObj.neighbors(graphObj.endpoints(i).first))
                     {
-                        createdPath.push_front(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value()));
-                    }
-                    if(j.value() == cellToVertex[rowForEnd][colForEnd].value())
-                    {
-                        createdPath.push_back(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value()));
-                        break;
-                    }
-                    if(graphObj.has_edge(j.value(), graphObj.endpoints(createdPath.back()).second))
-                    {
-                        createdPath.push_back(graphObj.insert_edge(graphObj.endpoints(createdPath.back()).second, j.value()));
-                    }       
-                }   
+                        cout << "TESTER C" << endl;
+                        // in connecting these edges I must also pass through the seperate cells 
+                        if(graphObj.endpoints(i).second == j)
+                        {
+                            cout << "TESTER D" << endl;
+                                for(auto k : graphObj.neighbors(j))
+                                {
+                                    cout << "TESTER E" << endl;
+                                //for(int itr = 0; itr < graphObj.degree(graphObj.endpoints(i).first); itr++)
+                                //{
+                                    if(graphObj.has_edge(graphObj.endpoints(i).first, k))
+                                    {
+                                        for(auto e : PathListB)
+                                        {
+                                            cout << "TESTER F" << endl;
+                                        }
+                                        //if(PathListB.back().weight() + graphObj.degree(j) + 1 < PathListB.back().weight()) 
+                                        //{
+                                            PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(i).first, k, PathListB.back().weight() + graphObj.degree(j) + 1));
+                                        //}
+                                        /*
+                                        else 
+                                        {
+                                            PathListB.push_back() 
+                                        }
+                                        */
+                                    }
+                                    else
+                                    {
+                                        cout << "TESTER G" << endl;
+                                        PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(i).first, j, PathListB.back().weight() + graphObj.degree(j) + 1));  
+                                        PathListB.push_back(graphObj.insert_edge(j, k, PathListB.back().weight() + graphObj.degree(graphObj.endpoints(i).first) + 1));
+                                        break;
+                                        //graphObj.erase(i);  
+                                    }
+                                //}
+                                }
+                        }
+                if(graphObj.endpoints(PathListB.front()).first == cellToVertex[rowForStart][colForStart].value() && graphObj.endpoints(PathListB.back()).second == cellToVertex[rowForEnd][colForEnd].value())
+                {
+                    createdPath = PathListB;
+                    done = true;
+                    //break;
+                }
+                }
+                }
             }
         }
-    
-         // this is where I would implement Dijkstra's to find the lowest weight path from start to end and then assign that path to a list of edges that I can then output at the end 
-         // this is also where I would update the maze with the . for visual representation of the path taken
-         
-        for(auto i : createdPath)
+        
+        // this is where I would implement Dijkstra's to find the lowest weight path from start to end and then assign that path to a list of edges that I can then output at the end 
+        // this is also where I would update the maze with the . for visual representation of the path taken
+        /*
+        for(auto i : pathListA)
         {
             cout << "Edge from " << *graphObj.endpoints(i).first << " to " << *graphObj.endpoints(i).second << " with weight " << i.weight() << endl;
         }
+        */
+        createdPath = PathListB;
+    }
+        
+    void usePath()
+    {
+        int row = 16;
+        int col = 16;
+        int size = 4;
+        const vector<vector<char>>& maze = mazeObj.getMaze();
+        
+        for(auto i = 0; i < row; i++)
+        {
+            for(auto j = 0; j < col; j++)
+            {
+                int index = i * col + j;
+                if(index == graphObj.endpoints(createdPath.front()).first || index == graphObj.endpoints(createdPath.front()).second)
+                {
+                    mazeObj.changeMaze(i, j, '.');
+                    createdpath.pop_front();
+                }
+            }
+        }
         cout << createdPath.size() << endl;
     }
+    
     // TESTER FOR FUNCTION TO BE WORKING PROPERLY 
     int outputVertices()
     {

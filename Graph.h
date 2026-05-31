@@ -114,13 +114,16 @@ class Graph
     ////////////////////////////////////////
 
     // Returns the number of outgoing (or incoming) edges for Vertex v
+    
+    // UTILIZE WITH NEIGHBORS AND ENDPOINTS
     int degree(Vertex v, bool outgoing = true) const {
         IncidenceMap& adj(outgoing || !directed ? v.vert->outgoing : v.vert->incoming);
         return adj.size();
     }
 
     // Returns a list of outgoing (or incoming) Vertex tokens for neighbors of Vertex v
-    // again handy functions for dead end
+
+    // UTILIZE WITH ENPOINTS 
     std::list<Vertex> neighbors(Vertex v, bool outgoing = true) const {
         std::list<Vertex> result;
         IncidenceMap& adj(outgoing || !directed ? v.vert->outgoing : v.vert->incoming);

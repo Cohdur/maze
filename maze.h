@@ -136,7 +136,10 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
             }
             
         }
-        
+        void changeMaze(int row, int col, char value)
+        {
+            big_maze.at(row).at(col) = value;
+        }
         void createMaze()
         {
 

@@ -20,6 +20,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     std::vector<std::vector<std::optional<Vertex>>> cellToVertex{16, std::vector<std::optional<Vertex>>(16)};
     // Maybe delete in final form 
     list<Edge> createdPath;
+    vector<int> AllIndexes;
     public:
     
     Solver() {};
@@ -75,6 +76,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
                 {
                     int index = r * col + c;
+                    AllIndexes.push_back(index);
                     if(mazeObj.getMaze().at(r).at(c) == 'H')
                     {
                         rowForEnd = r;
@@ -132,7 +134,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         const list<Edge>& pathListA = graphObj.edges();
         list<Edge> PathListB;
         bool done = false;
-        while(/*!done*/ PathListB.size() < 20)
+
+        while(!done)
         {
 
             for(auto i : pathListA)
@@ -186,7 +189,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                 //}
                                 }
                         }
-                if(graphObj.endpoints(PathListB.front()).first == cellToVertex[rowForStart][colForStart].value() && graphObj.endpoints(PathListB.back()).second == cellToVertex[rowForEnd][colForEnd].value())
+                if(/*graphObj.endpoints(PathListB.front()).first == cellToVertex[rowForStart][colForStart].value() &&*/ graphObj.endpoints(PathListB.back()).first == cellToVertex[rowForEnd][colForEnd].value()|| graphObj.endpoints(PathListB.back()).second == cellToVertex[rowForEnd][colForEnd].value())
                 {
                     createdPath = PathListB;
                     done = true;
@@ -205,29 +208,12 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             cout << "Edge from " << *graphObj.endpoints(i).first << " to " << *graphObj.endpoints(i).second << " with weight " << i.weight() << endl;
         }
         */
-        createdPath = PathListB;
+        //createdPath = PathListB;
     }
         
     void usePath()
     {
-        int row = 16;
-        int col = 16;
-        int size = 4;
-        const vector<vector<char>>& maze = mazeObj.getMaze();
-        
-        for(auto i = 0; i < row; i++)
-        {
-            for(auto j = 0; j < col; j++)
-            {
-                int index = i * col + j;
-                if(index == graphObj.endpoints(createdPath.front()).first || index == graphObj.endpoints(createdPath.front()).second)
-                {
-                    mazeObj.changeMaze(i, j, '.');
-                    createdpath.pop_front();
-                }
-            }
-        }
-        cout << createdPath.size() << endl;
+        // completely reconstruct the maze here with the class objects 
     }
     
     // TESTER FOR FUNCTION TO BE WORKING PROPERLY 

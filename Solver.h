@@ -225,15 +225,9 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             mazeObj.changeMaze(row, col, '.');
             mazeObj.output();
             cout << flush;
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
             mazeObj.changeMaze(row, col, ' ');
-            row = *graphObj.endpoints(i).second / 16;
-            col = *graphObj.endpoints(i).second % 16;
-            mazeObj.changeMaze(row, col, '.');
-            mazeObj.output();
-            cout << flush;
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            mazeObj.changeMaze(row, col, ' ');
+
             
         }
         

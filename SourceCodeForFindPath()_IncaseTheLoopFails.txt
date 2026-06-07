@@ -1,0 +1,48 @@
+        while(!done)
+        {
+
+            for(auto i : pathListA)
+            {   
+                if(PathListB.empty() && graphObj.endpoints(i).first == cellToVertex[rowForStart][colForStart].value())
+                {
+                    cout << "TESTER A" << endl;
+                    PathListB.push_back(i);
+                    //graphObj.erase(graphObj.endpoints(i).first);
+                }
+                if(!PathListB.empty())
+                {
+                    
+                    cout << "TESTER B" << endl;
+                    for(auto j : graphObj.neighbors(graphObj.endpoints(i).first))
+                    {
+                        cout << "TESTER C" << endl;
+                        // seems this will be true based on functionality so maybe omit this if()
+                        if(graphObj.endpoints(i).second == j)
+                        {
+                            cout << "TESTER D" << endl;
+                                for(auto k : graphObj.neighbors(j))
+                                {
+                                    cout << "TESTER E" << endl;
+                                //for(int itr = 0; itr < graphObj.degree(graphObj.endpoints(i).first); itr++)
+                                //{
+                                    else
+                                    {
+                                        cout << "TESTER G" << endl;
+                                        PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(i).first, j, PathListB.back().weight() + graphObj.degree(j) + 1));  
+                                        PathListB.push_back(graphObj.insert_edge(j, k, PathListB.back().weight() + graphObj.degree(graphObj.endpoints(i).first) + 1));
+                                        break;
+                                        //graphObj.erase(i);  
+                                    }
+                                //}
+                                }
+                        }
+                        if(/*graphObj.endpoints(PathListB.front()).first == cellToVertex[rowForStart][colForStart].value() &&*/ graphObj.endpoints(PathListB.back()).first == cellToVertex[rowForEnd][colForEnd].value()|| graphObj.endpoints(PathListB.back()).second == cellToVertex[rowForEnd][colForEnd].value())
+                        {
+                            createdPath = PathListB;
+                            done = true;
+                            //break;
+                        }
+                    }
+                }
+            }
+        }

@@ -1,4 +1,7 @@
 #include<iostream>
+#include<sstream>
+#include<thread>
+#include<chrono>
 #include<optional>
 #include "maze.h"
 #include "Graph.h"
@@ -145,7 +148,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     cout << "TESTER A" << endl;
                     PathListB.push_back(i);
                     //graphObj.erase(graphObj.endpoints(i).first);
-                }else if(!PathListB.empty())
+                }if(!PathListB.empty())
                 {
                     
                     cout << "TESTER B" << endl;
@@ -213,7 +216,27 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         
     void usePath()
     {
-        // completely reconstruct the maze here with the class objects 
+        
+        for(auto i : createdPath)
+        {
+            //cout << "Edge from " << *graphObj.endpoints(i).first << " to " << *graphObj.endpoints(i).second << " with weight " << i.weight() << endl;
+            int row = *graphObj.endpoints(i).first / 16;
+            int col = *graphObj.endpoints(i).first % 16;
+            mazeObj.changeMaze(row, col, '.');
+            mazeObj.output();
+            cout << flush;
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            mazeObj.changeMaze(row, col, ' ');
+            row = *graphObj.endpoints(i).second / 16;
+            col = *graphObj.endpoints(i).second % 16;
+            mazeObj.changeMaze(row, col, '.');
+            mazeObj.output();
+            cout << flush;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            mazeObj.changeMaze(row, col, ' ');
+            
+        }
+        
     }
     
     // TESTER FOR FUNCTION TO BE WORKING PROPERLY 

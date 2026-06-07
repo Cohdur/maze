@@ -15,7 +15,7 @@ int main()
     //game.outputCells();
     game.FindPath();
     game.usePath();
-    game.outputmaze();
+    //game.outputmaze();
     //game.outputEdgeCheck();
     //game.degreeOfVertex();
 

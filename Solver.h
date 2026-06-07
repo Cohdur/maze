@@ -2,7 +2,9 @@
 #include<sstream>
 #include<thread>
 #include<chrono>
+#include<climits>
 #include<optional>
+#include<list>
 #include "maze.h"
 #include "Graph.h"
 
@@ -52,7 +54,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     {
         mazeObj.createMaze();
         
-        for(auto x = 0; x < 15; x++)
+        for(auto x = 0; x < 5; x++)
         {
             mazeObj.create_openeings();
         }
@@ -99,7 +101,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }
         }
     }
-    
+    // it might be more efficent to handle the weighing here and simply assign a front to start and end to end 
+    // as I can utilize the graph.h functions directly 
     void createEdges()
     {
         // this is based on the maze size dimensions 
@@ -112,94 +115,163 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             {
                 if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
                 {
-                    if(CheckCellFromVectorListofVertices(r - 1, c))
-                    {
-                        graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r - 1][c].value(), 1.0);
-                    }
-                    if(CheckCellFromVectorListofVertices(r + 1, c))
-                    {
-                        graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r + 1][c].value(), 1.0);
-                    }
-                    if(CheckCellFromVectorListofVertices(r, c - 1))
-                    {
-                        graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c - 1].value(), 1.0);
-                    }
-                    if(CheckCellFromVectorListofVertices(r, c + 1))
-                    {
-                        graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c + 1].value(), 1.0);
+                        if(CheckCellFromVectorListofVertices(r - 1, c))
+                        {
+                            graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r - 1][c].value(), 1.0);
+                        }
+                        if(CheckCellFromVectorListofVertices(r + 1, c))
+                        {
+                            graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r + 1][c].value(), 1.0);
+                        }
+                        if(CheckCellFromVectorListofVertices(r, c - 1))
+                        {
+                            graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c - 1].value(), 1.0);
+                        }
+                        if(CheckCellFromVectorListofVertices(r, c + 1))
+                        {
+                            graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c + 1].value(), 1.0);
+                        }
+
                     }
                 }
             }
-        }
+        
     }
     void FindPath()
     {
-        const list<Edge>& pathListA = graphObj.edges();
+        list<Edge> pathListA = graphObj.edges();
         list<Edge> PathListB;
+        list<Edge> PathListC;
         bool done = false;
 
         while(!done)
         {
-
-            for(auto i : pathListA)
+            for(auto i = pathListA.begin(); i != pathListA.end(); i++)
             {   
-                if(PathListB.empty() && graphObj.endpoints(i).first == cellToVertex[rowForStart][colForStart].value())
+                auto j = graphObj.neighbors(graphObj.endpoints(*i).first);
+                double newWeight = graphObj.get_edge(graphObj.endpoints(*i).first, j.front()).weight() + 1.0;
+                cout << "TESTER A" << endl;
+                /*
+                if(graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart] && 
+                graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd])
                 {
-                    cout << "TESTER A" << endl;
-                    PathListB.push_back(i);
+                    //createdPath = PathListB;
+                    done = true;
+                    break;
+                }
+                */
+                // This is to initialize the start 
+                if(PathListB.empty() && graphObj.endpoints(*i).first == cellToVertex[rowForStart][colForStart].value())
+                {
+                    cout << "TESTER B" << endl;
+                    
+                    //if(graphObj.has_edge(graphObj.endpoints(*i).first, j.front()))
+                    //{
+                        while(!j.empty())
+                        {
+                            //newWeight = graphObj.get_edge(graphObj.endpoints(*i).first, j.first())->weight + 1.0;
+                            PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(*i).first, j.front(), newWeight));
+                            j.pop_front();
+                            if(j.size() >= 1)
+                            {
+                                PathListC.push_back(graphObj.insert_edge(graphObj.endpoints(*i).first, j.front(), newWeight));
+                                j.pop_front();
+                            }
+                        }
+                    //}
+                     
                     //graphObj.erase(graphObj.endpoints(i).first);
-                }if(!PathListB.empty())
+                }
+                // The seperation becomes more apparent here as I need to check the neighbors of the neighbors 
+                // and then compare weights to find the lowest weight path to assign to a list of edges that I can then output at the end
+                if(!PathListB.empty())
                 {
                     
-                    cout << "TESTER B" << endl;
-                    for(auto j : graphObj.neighbors(graphObj.endpoints(i).first))
-                    {
-                        cout << "TESTER C" << endl;
-                        // in connecting these edges I must also pass through the seperate cells 
-                        if(graphObj.endpoints(i).second == j)
+                    cout << "TESTER C" << endl;
+                    
+                    //if(graphObj.has_edge(graphObj.endpoints(*i).first, j.front()))
+                    //{
+                        while(!j.empty())
                         {
-                            cout << "TESTER D" << endl;
-                                for(auto k : graphObj.neighbors(j))
+                            cout << "TESTER E" << endl;
+                            PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(*i).first, j.front(), newWeight));
+                            j.pop_front();
+                            if(j.size() >= 1)
+                            {
+                                PathListC.push_back(graphObj.insert_edge(j.front(), graphObj.endpoints(*i).first, newWeight));
+                                j.pop_front();
+                            }
+                        }    
+                    //}
+                    cout << "PathListB size: " << PathListB.size() << endl;
+                    cout << "PathListC size: " << PathListC.size() << endl;
+                    auto itrB = PathListB.begin();
+                        while(itrB != PathListB.end() && !PathListC.empty())
+                        {
+                            auto itrC = PathListC.begin();
+                            bool erasedB = false;
+                            bool erasedC = false;
+                            
+                            cout << "TESTER F" << endl;
+                            
+                            while(itrC != PathListC.end() || !PathListC.empty())
+                            {
+                                cout << "THE WHILE IS WORKING" << endl;
+
+                                if( graphObj.has_edge(graphObj.endpoints(*itrB).first, graphObj.endpoints(*itrB).second) &&
+                                    graphObj.has_edge(graphObj.endpoints(*itrC).first, graphObj.endpoints(*itrC).second) &&
+                                    graphObj.endpoints(*itrB).second == graphObj.endpoints(*itrC).second)
                                 {
-                                    cout << "TESTER E" << endl;
-                                //for(int itr = 0; itr < graphObj.degree(graphObj.endpoints(i).first); itr++)
-                                //{
-                                    if(graphObj.has_edge(graphObj.endpoints(i).first, k))
+                                    cout << "TESTER G" << endl;
+                                    
+                                    if(graphObj.get_edge(graphObj.endpoints(*itrC).first,graphObj.endpoints(*itrC).second).weight() 
+                                    < graphObj.get_edge(graphObj.endpoints(*itrB).first,graphObj.endpoints(*itrB).second).weight())
                                     {
-                                        for(auto e : PathListB)
-                                        {
-                                            cout << "TESTER F" << endl;
-                                        }
-                                        //if(PathListB.back().weight() + graphObj.degree(j) + 1 < PathListB.back().weight()) 
-                                        //{
-                                            PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(i).first, k, PathListB.back().weight() + graphObj.degree(j) + 1));
-                                        //}
-                                        /*
-                                        else 
-                                        {
-                                            PathListB.push_back() 
-                                        }
-                                        */
+                                        //auto next = itrB;
+                                        //++next;
+                                        cout << "TESTER H" << endl;                                        
+                                        itrB = PathListB.erase(itrB);
+                                        erasedB = true;
+                                        //itrB = next;
+                                        break;
+                                        
                                     }
                                     else
                                     {
-                                        cout << "TESTER G" << endl;
-                                        PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(i).first, j, PathListB.back().weight() + graphObj.degree(j) + 1));  
-                                        PathListB.push_back(graphObj.insert_edge(j, k, PathListB.back().weight() + graphObj.degree(graphObj.endpoints(i).first) + 1));
-                                        break;
-                                        //graphObj.erase(i);  
+                                        //auto next = itrC;
+                                        //++next;
+                                        cout << "TESTER I" << endl;
+                                        itrC = PathListC.erase(itrC);
+                                        erasedC = true;
+                                        //itrC = next;
+                                        //found = true;
                                     }
-                                //}
                                 }
+                                if(!erasedC)
+                                {
+                                   ++itrC;
+                                }
+                                    
+                            }
+                            if(!erasedB)
+                            {
+                                ++itrB;
+                            }
                         }
-                if(/*graphObj.endpoints(PathListB.front()).first == cellToVertex[rowForStart][colForStart].value() &&*/ graphObj.endpoints(PathListB.back()).first == cellToVertex[rowForEnd][colForEnd].value()|| graphObj.endpoints(PathListB.back()).second == cellToVertex[rowForEnd][colForEnd].value())
-                {
-                    createdPath = PathListB;
-                    done = true;
-                    //break;
+                   
                 }
-                }
-                }
+            }
+            if(!PathListB.empty() && graphObj.endpoints(PathListB.front()).first == cellToVertex[rowForStart][colForStart] && 
+                graphObj.endpoints(PathListB.back()).second == cellToVertex[rowForEnd][colForEnd])
+            {
+                createdPath = move(PathListB);
+                done = true;
+            }
+            else if(!PathListC.empty() && graphObj.endpoints(PathListC.front()).first == cellToVertex[rowForStart][colForStart] && 
+                graphObj.endpoints(PathListC.back()).second == cellToVertex[rowForEnd][colForEnd])
+            {
+                createdPath = move(PathListC);
+                done = true;
             }
         }
         

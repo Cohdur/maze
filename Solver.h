@@ -109,12 +109,23 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         int row = mazeObj.getMaze().size();
         int col = mazeObj.getMaze().at(0).size();
 
-        for(auto r = 0; r < row; r++)
+        auto edges = graphObj.edges();
+        
+        bool done = false;
+        //auto j = graphObj.neighbors(graphObj.endpoints(*i).first);
+        //double newWeight = graphObj.get_edge(graphObj.endpoints(*i).first, j.front()).weight() + 1.0;
+
+        while(!done)
         {
-            for(auto c = 0; c < col; c++)
+        
+            for(auto r = 0; r < row; r++)
             {
-                if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
+                for(auto c = 0; c < col; c++)
                 {
+                if(graphObj.edges().size() == 0 && r == rowForStart && c == colForStart)
+                {
+                    if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
+                    {
                         if(CheckCellFromVectorListofVertices(r - 1, c))
                         {
                             graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r - 1][c].value(), 1.0);
@@ -131,12 +142,93 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         {
                             graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c + 1].value(), 1.0);
                         }
-
                     }
                 }
+                
+                if(graphObj.edges().size() != 0)
+                {
+                    auto neighbors = graphObj.neighbors(graphObj.endpoints(graphObj.edges().back()).first);
+                    int localRow = r;
+                    int localCol = c;
+
+                while(!neighbors.empty())
+                {
+                    
+                    if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
+                    {
+                        
+                        if(CheckCellFromVectorListofVertices(localRow - 1, localCol))
+                        {
+                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow-1][localCol].value(), neighbors.front()))
+                            {
+                               graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), 1.0);
+                               neighbors.pop_front();
+                            }
+                        }
+                        if(CheckCellFromVectorListofVertices(localRow + 1, localCol))
+                        {
+                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow+1][localCol].value(), neighbors.front()))
+                            {
+                               graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), 1.0);
+                               neighbors.pop_front();
+                            }
+                        }
+                        if(CheckCellFromVectorListofVertices(localRow, localCol - 1))
+                        {
+                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow][localCol-1].value(), neighbors.front()))
+                            {
+                                graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), 1.0);
+                                neighbors.pop_front();
+                            }
+                        }
+                        if(CheckCellFromVectorListofVertices(localRow, localCol + 1))
+                        {
+                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow][localCol+1].value(), neighbors.front()))
+                            {
+                                graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), 1.0);
+                                neighbors.pop_front();
+                            }
+                        }
+                        //cout << "neighbors size after: " << neighbors.size() << endl;
+                    }
+                    if(localCol < 15)
+                    localCol++;
+
+                    else if(localCol == 15)
+                    {
+                        if(localRow < 15)
+                        {
+                            localCol = 0;
+                            localRow++;
+                        }
+                        else
+                        {
+                            localCol = 0;
+                            localRow = 0;
+                        } 
+                    }
+                    
+                }
+                    if(!edges.empty() && graphObj.endpoints(graphObj.edges().front()).first == cellToVertex[rowForStart][colForStart].value() 
+                    && graphObj.endpoints(graphObj.edges().back()).second == cellToVertex[rowForEnd][colForEnd].value())
+                    {
+                        done = true;
+                    }
+                }
+                
             }
-        
+            /*
+            if(graphObj.edges().size() >= 10)
+            {
+                done = true;
+                break;
+            } 
+            */
+            }
+            
+        }       
     }
+
     void FindPath()
     {
         list<Edge> pathListA = graphObj.edges();
@@ -148,6 +240,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         {
             for(auto i = pathListA.begin(); i != pathListA.end(); i++)
             {   
+                
                 auto j = graphObj.neighbors(graphObj.endpoints(*i).first);
                 double newWeight = graphObj.get_edge(graphObj.endpoints(*i).first, j.front()).weight() + 1.0;
                 cout << "TESTER A" << endl;
@@ -172,7 +265,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             //newWeight = graphObj.get_edge(graphObj.endpoints(*i).first, j.first())->weight + 1.0;
                             PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(*i).first, j.front(), newWeight));
                             j.pop_front();
-                            if(j.size() >= 1)
+                            if(!j.empty())
                             {
                                 PathListC.push_back(graphObj.insert_edge(graphObj.endpoints(*i).first, j.front(), newWeight));
                                 j.pop_front();
@@ -196,7 +289,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             cout << "TESTER E" << endl;
                             PathListB.push_back(graphObj.insert_edge(graphObj.endpoints(*i).first, j.front(), newWeight));
                             j.pop_front();
-                            if(j.size() >= 1)
+                            if(!j.empty())
                             {
                                 PathListC.push_back(graphObj.insert_edge(j.front(), graphObj.endpoints(*i).first, newWeight));
                                 j.pop_front();
@@ -206,6 +299,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     cout << "PathListB size: " << PathListB.size() << endl;
                     cout << "PathListC size: " << PathListC.size() << endl;
                     auto itrB = PathListB.begin();
+                    
                         while(itrB != PathListB.end() && !PathListC.empty())
                         {
                             auto itrC = PathListC.begin();
@@ -214,12 +308,12 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             
                             cout << "TESTER F" << endl;
                             
-                            while(itrC != PathListC.end() || !PathListC.empty())
+                            while(!PathListC.empty() || itrC != PathListC.end())
                             {
                                 cout << "THE WHILE IS WORKING" << endl;
 
-                                if( graphObj.has_edge(graphObj.endpoints(*itrB).first, graphObj.endpoints(*itrB).second) &&
-                                    graphObj.has_edge(graphObj.endpoints(*itrC).first, graphObj.endpoints(*itrC).second) &&
+                                if(/*graphObj.has_edge(graphObj.endpoints(*itrB).first, graphObj.endpoints(*itrB).second) &&
+                                    graphObj.has_edge(graphObj.endpoints(*itrC).first, graphObj.endpoints(*itrB).second) &&*/
                                     graphObj.endpoints(*itrB).second == graphObj.endpoints(*itrC).second)
                                 {
                                     cout << "TESTER G" << endl;
@@ -241,17 +335,19 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                         //auto next = itrC;
                                         //++next;
                                         cout << "TESTER I" << endl;
-                                        itrC = PathListC.erase(itrC);
+                                        //itrC = PathListC.erase(itrC);
                                         erasedC = true;
                                         //itrC = next;
                                         //found = true;
                                     }
                                 }
-                                if(!erasedC)
+                                if(erasedC) { itrC = PathListC.erase(itrC); }
+                                else
                                 {
                                    ++itrC;
                                 }
-                                    
+
+                                  
                             }
                             if(!erasedB)
                             {
@@ -285,11 +381,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         */
         //createdPath = PathListB;
     }
-        
+       
     void usePath()
     {
         
-        for(auto i : createdPath)
+        for(auto i : graphObj.edges())
         {
             //cout << "Edge from " << *graphObj.endpoints(i).first << " to " << *graphObj.endpoints(i).second << " with weight " << i.weight() << endl;
             int row = *graphObj.endpoints(i).first / 16;

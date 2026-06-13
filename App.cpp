@@ -13,7 +13,7 @@ int main()
     //cout << game.outputVertices() << endl;
     game.createEdges();
     //game.outputCells();
-    game.FindPath();
+    //game.FindPath();
     game.usePath();
     //game.outputmaze();
     //game.outputEdgeCheck();

@@ -89,7 +89,7 @@ class Graph
     std::list<Vertex> vertices() const {
         std::list<Vertex> result;
         for (const ActualVertex& v : vertex_list)      // Note: reference variable to get correct pointer
-            result.emplace_back(Vertex(&v));
+            result.push_back(Vertex(&v));
         return result;
     }
 

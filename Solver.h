@@ -23,7 +23,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
     protected:
     std::vector<std::vector<std::optional<Vertex>>> cellToVertex{16, std::vector<std::optional<Vertex>>(16)};
-    
+    list<Edge> createdPath;
     // Use the cellToVertex in more optimal option 
     vector<int> AllIndexes;
     public:
@@ -38,9 +38,6 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     int colForEnd;
     int IndexKeyForEnd;
     double weight = 1;
-    // this would need a container plus a way to compare weight per trial then assign lowest to map 
-    // redirect a . that is placed along path for visual representation of path taken
-    // SO NOT SURE IF I WANT TO KEEP THIS TRIAL MAP
 
     bool CheckCellFromVectorListofVertices(int row, int col)
     {
@@ -65,9 +62,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     {
         mazeObj.output();
     }
-    //Working a on the idea of index per vertex given the placement of vertex within the graph 
-    // Diagnole moves require this to be Dijkstra's and not BFS as it's weights different 1 or sqrt(2) 
-    // this means that the edge should use a double and not an int for the weight 
+ 
     void pathFinder()
     {
         // these are based on maze size dimensions 
@@ -101,15 +96,17 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }
         }
     }
-    // it might be more efficent to handle the weighing here and simply assign a front to start and end to end 
-    // as I can utilize the graph.h functions directly 
+
     void createEdges()
     {
         // this is based on the maze size dimensions 
         int row = mazeObj.getMaze().size();
         int col = mazeObj.getMaze().at(0).size();
+
         auto edges = graphObj.edges();
 
+        list<Edge>* ptrEdges = nullptr;
+        list<Edge>* createdPathPtr = nullptr;
         bool done = false;
         bool firstPass = false;
 
@@ -125,19 +122,19 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     {
                         if(CheckCellFromVectorListofVertices(r - 1, c))
                         {
-                            graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r - 1][c].value(), 1.0);
+                            createdPath.push_back(graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r - 1][c].value(), 1.0));
                         }
                         if(CheckCellFromVectorListofVertices(r + 1, c))
                         {
-                            graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r + 1][c].value(), 1.0);
+                            createdPath.push_back(graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r + 1][c].value(), 1.0));
                         }
                         if(CheckCellFromVectorListofVertices(r, c - 1))
                         {
-                            graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c - 1].value(), 1.0);
+                            createdPath.push_back(graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c - 1].value(), 1.0));
                         }
                         if(CheckCellFromVectorListofVertices(r, c + 1))
                         {
-                            graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c + 1].value(), 1.0);
+                            createdPath.push_back(graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r][c + 1].value(), 1.0));
                         }
                         //reset the count 
                         r = 0;
@@ -168,21 +165,24 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     if(r == 15 && c == 15)
                     {
                         firstPass = true;
+                        
+                        ptrEdges = &(*edges.begin());
+                        createdPathPtr = &(*createdPath.begin());
                     } 
                         
                 }
                 
                 if(/*graphObj.edges().size() != 0 &&*/ firstPass)
                 {
-                    // somehow utilize this ptr and iterate as it continues 
-                    // this should still contain the logic as going from start to end and not spuradic 
-                    auto ptrEdges = edges.begin();
+                    
+                    //auto ptrEdges = edges.begin();
                        
-                    auto neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
+                    auto neighbors = graphObj.neighbors(graphObj.endpoints(ptrEdges).first);
+                    //auto neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
                     
                     int localRow = r;
                     int localCol = c;
-
+                
                 while(!neighbors.empty())
                 {
                     double newWeight = graphObj.get_edge(graphObj.endpoints(edges.back()).first, neighbors.front()).weight() + 1.0;
@@ -194,7 +194,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         {
                             if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow-1][localCol].value(), neighbors.front()))
                             {
-                               graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight);
+                               createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
                                neighbors.pop_front();
                             }
                         }
@@ -202,7 +202,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         {
                             if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow+1][localCol].value(), neighbors.front()))
                             {
-                               graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight);
+                               createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
                                neighbors.pop_front();
                             }
                         }
@@ -210,7 +210,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         {
                             if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow][localCol-1].value(), neighbors.front()))
                             {
-                                graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), newWeight);
+                                createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), newWeight));
                                 neighbors.pop_front();
                             }
                         }
@@ -218,7 +218,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         {
                             if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow][localCol+1].value(), neighbors.front()))
                             {
-                                graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), newWeight);
+                                createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), newWeight));
                                 neighbors.pop_front();
                             }
                         }
@@ -240,15 +240,35 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             localRow = 0;
                         } 
                     }
-                    if(edges.size() > 5) done = true; // delete after few runs 
+                    if(createdPath.size() > 10) done = true; // delete after few runs 
                 }
-                    if(!edges.empty() && graphObj.endpoints(graphObj.edges().front()).first == cellToVertex[rowForStart][colForStart].value() 
-                    && graphObj.endpoints(graphObj.edges().back()).second == cellToVertex[rowForEnd][colForEnd].value())
+                    if(!createdPath.empty() && graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value() 
+                    && graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value())
                     {
                         done = true;
                     }
-                    if(ptrEdges != edges.end()) ptrEdges++;
-                    else ptrEdges = edges.begin();
+                    // stack flow may be wrong here 
+                    // this may help pass over the loops for iterating through as it's just using the pre-made list
+                    // localized r and c values cause for more passes 
+                    // rethink logic without it to optimize as it's already initialized 
+                    auto neighbors2 = graphObj.neighbors(graphObj.endpoints(createdPathPtr).second);
+                    if(*ptrEdges != edges->end())
+                    {
+                        while(!graphObj.has_edge(graphObj.endpoints(*ptrEdges).first, neighbors2))
+                        {
+                            if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).first, neighbors2)) break;
+                            else if(*ptrEdges == edges->end())
+                            {
+                               ptrEdges = edges->begin();
+                            }
+                            else
+                            ptrEdges++;
+                        }
+                    } 
+                    else ptrEdges = edges->begin(); // recheck if this is needed 
+
+                    if(createdPathPtr != createdPathPtr->end()) createdPathPtr++; 
+                    else createdPathPtr = createdPath->begin(); 
                 }
                 
             }

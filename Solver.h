@@ -103,10 +103,12 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         int row = mazeObj.getMaze().size();
         int col = mazeObj.getMaze().at(0).size();
 
-        auto edges = graphObj.edges();
+        //list<Edge> edges = graphObj.edges();
+        list<Edge> edges;
 
-        list<Edge>* ptrEdges = nullptr;
-        list<Edge>* createdPathPtr = nullptr;
+        Edge* ptrEdges = nullptr;
+        Edge* createdPathPtr = nullptr;
+        list<Vertex> neighbors2; // neighbor of a neighbor 
         bool done = false;
         bool firstPass = false;
 
@@ -114,13 +116,14 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         {
             for(auto r = 0; r < row; r++)
             {
+
                 for(auto c = 0; c < col; c++)
                 {
-                if(!firstPass && graphObj.edges().size() == 0 && r == rowForStart && c == colForStart)
-                {
-                    if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
+                    if(!firstPass && graphObj.edges().size() == 0 && r == rowForStart && c == colForStart)
                     {
-                        if(CheckCellFromVectorListofVertices(r - 1, c))
+                        if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
+                        {
+                            if(CheckCellFromVectorListofVertices(r - 1, c))
                         {
                             createdPath.push_back(graphObj.insert_edge(cellToVertex[r][c].value(), cellToVertex[r - 1][c].value(), 1.0));
                         }
@@ -141,7 +144,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         c = 0;
                     }
                 }
-                else if(!firstPass && graphObj.edges().size() != 0)
+                    else if(!firstPass && graphObj.edges().size() != 0)
                 {
                     if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
                     {
@@ -166,49 +169,51 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     {
                         firstPass = true;
                         
-                        ptrEdges = &(*edges.begin());
-                        createdPathPtr = &(*createdPath.begin());
+                        // itital assignment 
+                        edges = graphObj.edges();
+                        ptrEdges = &edges.front();
+                        createdPathPtr = &createdPath.front();
+                        neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
                     } 
-                        
+                    
                 }
                 
                 if(/*graphObj.edges().size() != 0 &&*/ firstPass)
-                {
-                    
+                {                    
                     //auto ptrEdges = edges.begin();
-                       
-                    auto neighbors = graphObj.neighbors(graphObj.endpoints(ptrEdges).first);
+                    
+                    auto neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
                     //auto neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
                     
                     int localRow = r;
                     int localCol = c;
-                
-                while(!neighbors.empty())
-                {
-                    double newWeight = graphObj.get_edge(graphObj.endpoints(edges.back()).first, neighbors.front()).weight() + 1.0;
-
-                    if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
+                    
+                    while(!neighbors.empty())
                     {
+                        double newWeight = graphObj.get_edge(graphObj.endpoints(createdPath.back()).first, neighbors.front()).weight() + 1.0;
                         
-                        if(CheckCellFromVectorListofVertices(localRow - 1, localCol))
+                        if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
                         {
-                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow-1][localCol].value(), neighbors.front()))
+                            
+                            if(CheckCellFromVectorListofVertices(localRow - 1, localCol))
                             {
-                               createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
-                               neighbors.pop_front();
+                                if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && graphObj.has_edge(cellToVertex[localRow-1][localCol].value(), neighbors.front()))
+                                {
+                                    createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
+                                    neighbors.pop_front();
+                                }
                             }
-                        }
                         if(CheckCellFromVectorListofVertices(localRow + 1, localCol))
                         {
-                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow+1][localCol].value(), neighbors.front()))
+                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && graphObj.has_edge(cellToVertex[localRow+1][localCol].value(), neighbors.front()))
                             {
-                               createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
+                                createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
                                neighbors.pop_front();
                             }
                         }
                         if(CheckCellFromVectorListofVertices(localRow, localCol - 1))
                         {
-                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow][localCol-1].value(), neighbors.front()))
+                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && graphObj.has_edge(cellToVertex[localRow][localCol-1].value(), neighbors.front()))
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), newWeight));
                                 neighbors.pop_front();
@@ -216,7 +221,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         }
                         if(CheckCellFromVectorListofVertices(localRow, localCol + 1))
                         {
-                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && !graphObj.has_edge(cellToVertex[localRow][localCol+1].value(), neighbors.front()))
+                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && graphObj.has_edge(cellToVertex[localRow][localCol+1].value(), neighbors.front()))
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), newWeight));
                                 neighbors.pop_front();
@@ -226,7 +231,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     }
                     if(localCol < 15)
                     localCol++;
-
+                    
                     else if(localCol == 15)
                     {
                         if(localRow < 15)
@@ -240,39 +245,43 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             localRow = 0;
                         } 
                     }
-                    if(createdPath.size() > 10) done = true; // delete after few runs 
+                    if(createdPath.size() > 15) done = true; // delete after few runs 
                 }
-                    if(!createdPath.empty() && graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value() 
-                    && graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value())
-                    {
-                        done = true;
-                    }
-                    // stack flow may be wrong here 
-                    // this may help pass over the loops for iterating through as it's just using the pre-made list
-                    // localized r and c values cause for more passes 
-                    // rethink logic without it to optimize as it's already initialized 
-                    auto neighbors2 = graphObj.neighbors(graphObj.endpoints(createdPathPtr).second);
-                    if(*ptrEdges != edges->end())
-                    {
-                        while(!graphObj.has_edge(graphObj.endpoints(*ptrEdges).first, neighbors2))
-                        {
-                            if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).first, neighbors2)) break;
-                            else if(*ptrEdges == edges->end())
-                            {
-                               ptrEdges = edges->begin();
-                            }
-                            else
-                            ptrEdges++;
-                        }
-                    } 
-                    else ptrEdges = edges->begin(); // recheck if this is needed 
-
-                    if(createdPathPtr != createdPathPtr->end()) createdPathPtr++; 
-                    else createdPathPtr = createdPath->begin(); 
+                if(!createdPath.empty() && graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value() 
+                && graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value())
+                {
+                    done = true;
                 }
                 
+                //auto neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // more than 1?
+                if(neighbors2.empty())
+                {
+                    neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
+                    if(createdPathPtr != &createdPath.back()) createdPathPtr++;
+                    else createdPathPtr = &createdPath.front();
+                }
+                if(!neighbors2.empty() && ptrEdges != &edges.back())
+                {
+                    while(!graphObj.has_edge(graphObj.endpoints(*ptrEdges).first, neighbors2.front()))
+                    {
+                        if(ptrEdges == &edges.back())
+                        {
+                            ptrEdges = &edges.front();
+                        }
+                        if(neighbors2.empty()) break;
+                        else if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).first, neighbors2.front()))
+                        {
+                            neighbors2.pop_front();
+                        }
+                            
+                        ptrEdges++;
+                    }
+                } 
+                else ptrEdges = &edges.front(); // recheck if this is needed 
+                      
+                }      
             }
-            
+             
             }
             
         }       

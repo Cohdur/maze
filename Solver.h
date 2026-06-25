@@ -174,6 +174,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         ptrEdges = &edges.front();
                         createdPathPtr = &createdPath.front();
                         neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
+                        neighbors2.pop_front(); // should remove the origin copy over
                     } 
                     
                 }
@@ -190,7 +191,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     
                     while(!neighbors.empty())
                     {
-                        double newWeight = graphObj.get_edge(graphObj.endpoints(createdPath.back()).first, neighbors.front()).weight() + 1.0;
+                        double newWeight = graphObj.get_edge(graphObj.endpoints(createdPath.back()).second, neighbors.front()).weight() + 1.0;
                         
                         if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
                         {
@@ -257,21 +258,29 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 if(neighbors2.empty())
                 {
                     neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
+                    neighbors2.pop_front(); // should remove the origin copy 
                     if(createdPathPtr != &createdPath.back()) createdPathPtr++;
                     else createdPathPtr = &createdPath.front();
                 }
-                if(!neighbors2.empty() && ptrEdges != &edges.back())
+                if(ptrEdges != &edges.back())
                 {
-                    while(!graphObj.has_edge(graphObj.endpoints(*ptrEdges).first, neighbors2.front()))
+                    cout << "WTF edge from " << *graphObj.endpoints(*ptrEdges).first
+                         << " to " << *graphObj.endpoints(*ptrEdges).second << endl;
+                    cout << "neightbors 2 " << *neighbors2.front(); 
+                    // it's looking for a edge that doesn't exists but the logic is moving it correctly
+                    // this will cause a error each time as the argument requires a edge already intialized 
+                    while(!graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
                     {
+                        if(neighbors2.empty()) break;
+
                         if(ptrEdges == &edges.back())
                         {
                             ptrEdges = &edges.front();
                         }
-                        if(neighbors2.empty()) break;
-                        else if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).first, neighbors2.front()))
+                        else if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
                         {
-                            neighbors2.pop_front();
+                            neighbors2.pop_front(); // it's assigning the previous vertex from the original so it might back track due to this
+                            break;
                         }
                             
                         ptrEdges++;

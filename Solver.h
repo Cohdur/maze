@@ -109,7 +109,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         Edge* ptrEdges = nullptr;
         Edge* createdPathPtr = nullptr;
         list<Vertex> neighbors2; // neighbor of a neighbor 
-        double newWeight = 2.0;
+        double newWeight;
         bool done = false;
         bool firstPass = false;
 
@@ -175,7 +175,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         ptrEdges = &edges.front(); // can change to just direct object reference instead of edges
                         createdPathPtr = &createdPath.front();
                         neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
-                        neighbors2.pop_front(); // should remove the origin copy over
+                        //neighbors2.pop_front(); // should remove the origin copy over
+                        neighbors2.remove(graphObj.endpoints(*ptrEdges).first);
                     } 
                     
                 }
@@ -188,10 +189,18 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     int localRow = r;
                     int localCol = c;
                     
+                    // Soon I'll have to start removing unnecassary weight 
                     while(!neighbors.empty())
-                    {
-                        // removing to see if logic falls through later 
-                        //newWeight = graphObj.get_edge(graphObj.endpoints(createdPath.back()).second, neighbors2.front()).weight() + 1.0;
+                    {       
+                        // for now the issue is the neighbors are random so this pass can work to find a actual edge                 
+                        for(auto i : neighbors2)
+                        {
+                            if(graphObj.has_edge(graphObj.endpoints(createdPath.back()).second, i))
+                            {
+                                newWeight = graphObj.get_edge(graphObj.endpoints(createdPath.back()).second, i).weight() + 1.0;
+                                break;
+                            }
+                        }
                         
                         if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
                         {
@@ -202,7 +211,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                 {
                                     createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
                                     neighbors.pop_front();
-                                    //neighbors2.pop_front();
+                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
+                                    {
+                                        if(*itr == cellToVertex[localRow-1][localCol]) itr = neighbors2.erase(itr);
+                                        else ++itr;
+                                    }
                                 }
                             }
                         if(CheckCellFromVectorListofVertices(localRow + 1, localCol))
@@ -211,7 +224,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
                                 neighbors.pop_front();
-                                //neighbors2.pop_front();
+                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
+                                    {
+                                        if(*itr == cellToVertex[localRow+1][localCol]) itr = neighbors2.erase(itr);
+                                        else ++itr;
+                                    }
                             }
                         }
                         if(CheckCellFromVectorListofVertices(localRow, localCol - 1))
@@ -220,7 +237,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), newWeight));
                                 neighbors.pop_front();
-                                //neighbors2.pop_front();
+                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
+                                    {
+                                        if(*itr == cellToVertex[localRow][localCol-1]) itr = neighbors2.erase(itr);
+                                        else ++itr;
+                                    }
                             }
                         }
                         if(CheckCellFromVectorListofVertices(localRow, localCol + 1))
@@ -229,7 +250,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), newWeight));
                                 neighbors.pop_front();
-                                //neighbors2.pop_front();
+                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
+                                    {
+                                        if(*itr == cellToVertex[localRow][localCol+1]) itr = neighbors2.erase(itr);
+                                        else ++itr;
+                                    }
                             }
                         }
                         
@@ -250,7 +275,14 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             localRow = 0;
                         } 
                     }
-                    if(createdPath.size() > 15) done = true; // delete after few runs 
+                    
+                    if(createdPath.size() > 20)
+                    {
+                        done = true; // delete after few runs 
+                        break;
+                    } 
+                    
+                    
                 }
                 if(!createdPath.empty() && graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value() 
                 && graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value())
@@ -276,13 +308,16 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             ptrEdges = &edges.front(); // circle back around 
                             if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
                             {
-                                neighbors2.pop_back(); // remove instance of the vertex 
+                                // finds the neighbor should I also remove any index in here that are already listed a edges 
+                                // it possible that it can populate looping through as the logic ask for a edge 
+
+                                //neighbors2.pop_front();
                                 break;
                             }
                         }
                         if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
                         {
-                            neighbors2.pop_back(); // remove instance of the vertex 
+                            //neighbors2.pop_front();
                             break;
                         }
                             

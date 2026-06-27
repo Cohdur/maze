@@ -5,6 +5,7 @@
 #include<climits>
 #include<optional>
 #include<list>
+
 #include "maze.h"
 #include "Graph.h"
 
@@ -102,16 +103,23 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         // this is based on the maze size dimensions 
         int row = mazeObj.getMaze().size();
         int col = mazeObj.getMaze().at(0).size();
-
-        //list<Edge> edges = graphObj.edges();
-        list<Edge> edges;
-
-        Edge* ptrEdges = nullptr;
-        Edge* createdPathPtr = nullptr;
-        list<Vertex> neighbors2; // neighbor of a neighbor 
+        //reassign edges 
         double newWeight;
+
+        //control operation tokens
         bool done = false;
         bool firstPass = false;
+        list<Edge> edges;
+        
+        typename list<Edge>::const_iterator EdgePtrItr;
+        const Edge* ptrEdges = nullptr;
+
+        typename list<Edge>::const_iterator createdPathPtrItr;
+        const Edge* createdPathPtr = nullptr;
+
+        list<Vertex> neighbors; 
+        list<Vertex> neighbors2; // neighbor of a neighbor 
+        
 
         while(!done)
         {
@@ -172,8 +180,12 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         
                         // itital assignment 
                         edges = graphObj.edges();
-                        ptrEdges = &edges.front(); // can change to just direct object reference instead of edges
-                        createdPathPtr = &createdPath.front();
+                        EdgePtrItr = edges.begin();
+                        ptrEdges = &(*EdgePtrItr); // can change to just direct object reference instead of edges
+                        neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
+                        
+                        createdPathPtrItr = createdPath.begin();
+                        createdPathPtr = &(*createdPathPtrItr);
                         neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
                         //neighbors2.pop_front(); // should remove the origin copy over
                         neighbors2.remove(graphObj.endpoints(*ptrEdges).first);
@@ -184,15 +196,17 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 if(firstPass)
                 {                    
                     
-                    auto neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
+                    //auto neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
                     
                     int localRow = r;
                     int localCol = c;
                     
                     // Soon I'll have to start removing unnecassary weight 
-                    while(!neighbors.empty())
+                    // changed to neighbors2 to check this logic out same thing with every if statement !neighbors.empty 
+                    while(!neighbors2.empty())
                     {       
                         // for now the issue is the neighbors are random so this pass can work to find a actual edge                 
+                        // using incident edges function can be more optimal than using neighbors2 as it's the same thing except using the custom map already designed for storing data
                         for(auto i : neighbors2)
                         {
                             if(graphObj.has_edge(graphObj.endpoints(createdPath.back()).second, i))
@@ -201,58 +215,102 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                 break;
                             }
                         }
-                        
+                        // add the logic not to duplicate in the if enclosing the assignment operation 
+                        // it's possible to check for duplicates in createdPath
+                        // another possible idea is remove them from edges map entirely 
                         if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
                         {
                             
                             if(CheckCellFromVectorListofVertices(localRow - 1, localCol))
                             {
-                                if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && graphObj.has_edge(cellToVertex[localRow-1][localCol].value(), neighbors.front()))
+                                if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
                                 {
-                                    createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
-                                    neighbors.pop_front();
-                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
+                                    for(auto chk : createdPath)
                                     {
-                                        if(*itr == cellToVertex[localRow-1][localCol]) itr = neighbors2.erase(itr);
+                                        if(chk == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol]))
+                                        break;
+                                        else if(chk == createdPath.end())
+                                        createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
+                                    }
+
+                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
+                                    {   
+                                        if(*itr == cellToVertex[localRow-1][localCol])
+                                        {
+                                            itr = neighbors2.erase(itr); 
+                                        } 
                                         else ++itr;
                                     }
                                 }
                             }
                         if(CheckCellFromVectorListofVertices(localRow + 1, localCol))
                         {
-                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && graphObj.has_edge(cellToVertex[localRow+1][localCol].value(), neighbors.front()))
+                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
-                                neighbors.pop_front();
+                                    
+                                    for(auto chk : createdPath)
+                                    {
+                                        if(chk == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol]))
+                                        break;
+                                        else if(chk == createdPath.end())
+                                        createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
+                                    }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
                                     {
-                                        if(*itr == cellToVertex[localRow+1][localCol]) itr = neighbors2.erase(itr);
+                                        if(*itr == cellToVertex[localRow+1][localCol]) 
+                                        {
+                                            itr = neighbors2.erase(itr);
+                                            break;
+                                        }
                                         else ++itr;
                                     }
                             }
                         }
                         if(CheckCellFromVectorListofVertices(localRow, localCol - 1))
                         {
-                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && graphObj.has_edge(cellToVertex[localRow][localCol-1].value(), neighbors.front()))
+                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), newWeight));
-                                neighbors.pop_front();
+
+                                    for(auto chk : createdPath)
+                                    {
+                                        if(chk == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1]))
+                                        break;
+                                        else if(chk == createdPath.end())
+                                        createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol- 1].value(), newWeight));
+                                    }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
                                     {
-                                        if(*itr == cellToVertex[localRow][localCol-1]) itr = neighbors2.erase(itr);
+                                        if(*itr == cellToVertex[localRow][localCol-1])
+                                        {
+                                            itr = neighbors2.erase(itr);
+                                            break;
+                                        }
                                         else ++itr;
                                     }
                             }
                         }
                         if(CheckCellFromVectorListofVertices(localRow, localCol + 1))
                         {
-                            if(!neighbors.empty() && cellToVertex[localRow][localCol] == neighbors.front() && graphObj.has_edge(cellToVertex[localRow][localCol+1].value(), neighbors.front()))
+                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), newWeight));
-                                neighbors.pop_front();
+
+                                    for(auto chk : createdPath)
+                                    {
+                                        if(chk == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol+ 1]))
+                                        break;
+                                        else if(chk == createdPath.end())
+                                        createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol+ 1].value(), newWeight));
+                                    }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
                                     {
-                                        if(*itr == cellToVertex[localRow][localCol+1]) itr = neighbors2.erase(itr);
+                                        if(*itr == cellToVertex[localRow][localCol+1]) 
+                                        {
+                                            itr = neighbors2.erase(itr);
+                                            break;
+                                        }
                                         else ++itr;
                                     }
                             }
@@ -276,68 +334,81 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         } 
                     }
                     
-                    if(createdPath.size() > 20)
-                    {
-                        done = true; // delete after few runs 
-                        break;
-                    } 
-                    
-                    
                 }
-                if(!createdPath.empty() && graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value() 
-                && graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value())
+                if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
+                && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
                 {
                     done = true;
+                    break;
                 }
                 
                 if(neighbors2.empty())
                 {
-                    if(createdPathPtr != &createdPath.back()) createdPathPtr++; // one pass  
-                    neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // get a new reference list of vertex
-                    //neighbors2.pop_front(); // should remove the origin vertex copy 
-                    //else createdPathPtr = &createdPath.front(); not needed 
+                    if(createdPathPtrItr != createdPath.end())
+                    {
+                        ++createdPathPtrItr; // one pass  
+                        createdPathPtr = &(*createdPathPtrItr);  
+                        neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // get a new reference list of vertex
+                    } 
+                    else done = true; 
+                    // try another idea with adjacent function same thing just uses the maps 
                 }
-                if(ptrEdges != &edges.back())
+
+                if(EdgePtrItr != edges.end())
                 {    
+                    ++EdgePtrItr;
+                    ptrEdges = &(*EdgePtrItr);
+                } 
+                else
+                {
+                    EdgePtrItr = edges.begin(); // recheck if this is needed
+                    ptrEdges = &(*EdgePtrItr);
+                } 
                     while(!graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
                     {
-                        //if(neighbors2.empty()) break;
-
-                        if(ptrEdges == &edges.back())
+                        ptrEdges = &(*EdgePtrItr);
+                        if(EdgePtrItr == edges.end())
                         {
-                            ptrEdges = &edges.front(); // circle back around 
+                            EdgePtrItr = edges.begin(); // circle back around 
+                            ptrEdges = &(*EdgePtrItr);
                             if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
                             {
                                 // finds the neighbor should I also remove any index in here that are already listed a edges 
                                 // it possible that it can populate looping through as the logic ask for a edge 
-
+                                neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
                                 //neighbors2.pop_front();
                                 break;
                             }
                         }
+
                         if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
                         {
                             //neighbors2.pop_front();
+                            neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
                             break;
                         }
-                            
-                        ptrEdges++;
+                        ++EdgePtrItr;                       
                     }
-                } 
-                else ptrEdges = &edges.front(); // recheck if this is needed 
+                
                       
                 }      
             }
              
             }
-            
+            // really no better way to exit quicker that I know of for now 
+            if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
+                && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
+                {
+                    done = true;
+                    break;
+                }
         }       
     }
     
     void usePath()
     {
         
-        for(auto i : graphObj.edges())
+        for(auto i : createdPath)
         {
             //cout << "Edge from " << *graphObj.endpoints(i).first << " to " << *graphObj.endpoints(i).second << " with weight " << i.weight() << endl;
             int row = *graphObj.endpoints(i).first / 16;

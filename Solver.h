@@ -225,11 +225,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             {
                                 if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
                                 {
-                                    for(auto chk : createdPath)
+                                    for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
                                     {
-                                        if(chk == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol]))
+                                        if(*itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value()))
                                         break;
-                                        else if(chk == createdPath.end())
+                                        else if(itr == createdPath.end())
                                         createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
                                     }
 
@@ -249,11 +249,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
                                     
-                                    for(auto chk : createdPath)
+                                    for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
                                     {
-                                        if(chk == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol]))
+                                        if(*itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value()))
                                         break;
-                                        else if(chk == createdPath.end())
+                                        else if(itr == createdPath.end())
                                         createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
                                     }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
@@ -273,11 +273,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), newWeight));
 
-                                    for(auto chk : createdPath)
+                                    for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
                                     {
-                                        if(chk == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1]))
+                                        if(*itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value()))
                                         break;
-                                        else if(chk == createdPath.end())
+                                        else if(itr == createdPath.end())
                                         createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol- 1].value(), newWeight));
                                     }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
@@ -297,11 +297,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             {
                                 createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), newWeight));
 
-                                    for(auto chk : createdPath)
+                                    for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
                                     {
-                                        if(chk == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol+ 1]))
+                                        if(*itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol+ 1].value()))
                                         break;
-                                        else if(chk == createdPath.end())
+                                        else if(itr == createdPath.end())
                                         createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol+ 1].value(), newWeight));
                                     }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)

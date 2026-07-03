@@ -109,17 +109,17 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         //control operation tokens
         bool done = false;
         bool firstPass = false;
-        bool multipleNeighbors = false;
         list<Edge> edges;
+        vector<list<Edge>> TotalNeighborsList; // not being used
         
-        typename list<Edge>::const_iterator EdgePtrItr;
-        const Edge* ptrEdges = nullptr;
+        //typename list<Edge>::const_iterator EdgePtrItr;
+        //const Edge* ptrEdges = nullptr;
 
         typename list<Edge>::const_iterator createdPathPtrItr;
         const Edge* createdPathPtr = nullptr;
 
-        list<Vertex> neighbors; 
-        list<Vertex> neighbors2; // neighbor of a neighbor 
+        list<Edge> neighbors; 
+        list<Edge> neighbors2; // neighbor of a neighbor 
         
 
         while(!done)
@@ -181,32 +181,32 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         
                         // itital assignment 
                         edges = graphObj.edges();
-                        EdgePtrItr = edges.begin();
-                        ptrEdges = &(*EdgePtrItr); // can change to just direct object reference instead of edges
-                        neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
+                        //EdgePtrItr = edges.begin();
+                        //ptrEdges = &(*EdgePtrItr); // can change to just direct object reference instead of edges
+                        //neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
                         
                         createdPathPtrItr = createdPath.begin();
                         createdPathPtr = &(*createdPathPtrItr);
-                        neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
-                        neighbors2.remove(graphObj.endpoints(*ptrEdges).first);
+                        neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
+                        neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
+                        //neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
+                        //neighbors2.remove(graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second, false));
                     } 
                     
                 }
                 
                 if(firstPass)
-                {                    
-                    
+                {                      
                     //auto neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
                     
                     int localRow = r;
                     int localCol = c;
                     
                     // Soon I'll have to start removing unnecassary weight 
-                    // changed to neighbors2 to check this logic out same thing with every if statement !neighbors.empty 
-                    while(!neighbors2.empty())
+                    
+                    while(!neighbors2.empty() && !neighbors.empty())
                     {       
-                        // for now the issue is the neighbors are random so this pass can work to find a actual edge                 
-                        // using incident edges function can be more optimal than using neighbors2 as it's the same thing except using the custom map already designed for storing data
+                        // fix this shit 
                         for(auto i : neighbors2)
                         {
                             if(graphObj.has_edge(graphObj.endpoints(createdPath.back()).second, i))
@@ -215,15 +215,13 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                 break;
                             }
                         }
-                        // add the logic not to duplicate in the if enclosing the assignment operation 
-                        // it's possible to check for duplicates in createdPath
-                        // another possible idea is remove them from edges map entirely 
+                        
                         if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
                         {
                             
                             if(CheckCellFromVectorListofVertices(localRow - 1, localCol))
                             {
-                                if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
+                                if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
                                 {
                                     for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
                                     {
@@ -236,7 +234,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
                                     {   
-                                        if(*itr == cellToVertex[localRow-1][localCol])
+                                        if(graphObj.endpoints(*itr).second == cellToVertex[localRow-1][localCol])
                                         {
                                             itr = neighbors2.erase(itr); 
                                         } 
@@ -246,7 +244,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             }
                         if(CheckCellFromVectorListofVertices(localRow + 1, localCol))
                         {
-                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
+                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
                             {
                                 //createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
                                     
@@ -260,7 +258,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                     }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
                                     {
-                                        if(*itr == cellToVertex[localRow+1][localCol]) 
+                                        if(graphObj.endpoints(*itr).second == cellToVertex[localRow+1][localCol]) 
                                         {
                                             itr = neighbors2.erase(itr);
                                             break;
@@ -271,7 +269,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         }
                         if(CheckCellFromVectorListofVertices(localRow, localCol - 1))
                         {
-                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
+                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
                             {
                                 //createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), newWeight));
 
@@ -285,7 +283,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                     }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
                                     {
-                                        if(*itr == cellToVertex[localRow][localCol-1])
+                                        if(graphObj.endpoints(*itr).second == cellToVertex[localRow][localCol-1])
                                         {
                                             itr = neighbors2.erase(itr);
                                             break;
@@ -296,7 +294,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         }
                         if(CheckCellFromVectorListofVertices(localRow, localCol + 1))
                         {
-                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == neighbors.front() )
+                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
                             {
                                 //createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), newWeight));
 
@@ -310,13 +308,18 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                     }
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
                                     {
-                                        if(*itr == cellToVertex[localRow][localCol+1]) 
+                                        if(graphObj.endpoints(*itr).second == cellToVertex[localRow][localCol+1]) 
                                         {
                                             itr = neighbors2.erase(itr);
                                             break;
                                         }
                                         else ++itr;
                                     }
+                            }
+
+                            if(cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
+                            {
+                                neighbors.pop_front(); // I assume that the origin isn't worth noting 
                             }
                         }
                         
@@ -346,37 +349,39 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     break;
                 }
                 
-                if(neighbors2.empty())
-                {
                     if(createdPathPtrItr != createdPath.end() && createdPath.size() > 1)
                     {
                         ++createdPathPtrItr; // one pass  
                         createdPathPtr = &(*createdPathPtrItr);  
-                        neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // get a new reference list of vertex
+                        neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
+                        neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
+                        //neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // get a new reference list of vertex
                     }
+                    /*
                     else if(createdPathPtrItr != createdPath.end() && createdPath.size() == 1)
                     {
-                       neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // reassign the first take 
-                       neighbors2.remove(graphObj.endpoints(*ptrEdges).first); // this is the second time I needed to use this O(n) operation  
+                        neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
+                        neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second); // this is the second time I needed to use this O(n) operation  
                     } 
+                    */
                     else done = true;
-                }
 
-                // this could be where I pop off the already assigned neighbors using bool multipleNeighbors
-                // I can't iterate past the others if only one is being used or one is left to utilize prior to moving on 
+                // looking into just the optimal way of incident edges
+                /*
                 if(EdgePtrItr != edges.end())
                 {    
                     ++EdgePtrItr;
                     ptrEdges = &(*EdgePtrItr);
                 } 
-                else
+                else if(EdgePtrItr == edges.end())
                 {
                     EdgePtrItr = edges.begin(); // recheck if this is needed
                     ptrEdges = &(*EdgePtrItr);
                 } 
                     while(!graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
                     {
-                        ptrEdges = &(*EdgePtrItr);
+                        //ptrEdges = &(*EdgePtrItr);
+
                         if(EdgePtrItr == edges.end())
                         {
                             EdgePtrItr = edges.begin(); // circle back around 
@@ -397,9 +402,10 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
                             break;
                         }
-                        ++EdgePtrItr;                       
+
+                        //++EdgePtrItr;                       
                     }
-                
+                */
                       
                 }      
             }
@@ -407,11 +413,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }
             // really no better way to exit quicker that I know of for now 
             if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
-                && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
-                {
-                    done = true;
-                    break;
-                }
+            && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
+            {
+                done = true;
+                break;
+            }
         }       
     }
     

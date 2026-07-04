@@ -188,7 +188,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         createdPathPtr = &(*createdPathPtrItr);
                         neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
                         neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
-                        newWeight = createdPath.size() - neighbors.size() + 1;
+                        newWeight = createdPath.size() + 1; // intial edge is 2 
                         //neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
                         //neighbors2.remove(graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second, false));
                     } 

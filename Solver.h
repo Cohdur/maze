@@ -104,8 +104,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         int row = mazeObj.getMaze().size();
         int col = mazeObj.getMaze().at(0).size();
         //reassign edges 
-        double newWeight;
-
+        double newWeight = 0; 
         //control operation tokens
         bool done = false;
         bool firstPass = false;
@@ -189,6 +188,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         createdPathPtr = &(*createdPathPtrItr);
                         neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
                         neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
+                        newWeight = createdPath.size() - neighbors.size() + 1;
                         //neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
                         //neighbors2.remove(graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second, false));
                     } 
@@ -197,7 +197,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 
                 if(firstPass)
                 {                      
-                    //auto neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
+                    // I can possibly just use a single while loop after assigning all the edges since adjacent_edges retrieves the info
+                    // move the for loops closing brackets to above this if()
                     
                     int localRow = r;
                     int localCol = c;
@@ -206,16 +207,6 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     
                     while(!neighbors2.empty() && !neighbors.empty())
                     {       
-                        // fix this shit 
-                        for(auto i : neighbors2)
-                        {
-                            if(graphObj.has_edge(graphObj.endpoints(createdPath.back()).second, i))
-                            {
-                                newWeight = graphObj.get_edge(graphObj.endpoints(createdPath.back()).second, i).weight() + 1.0;
-                                break;
-                            }
-                        }
-                        
                         if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
                         {
                             
@@ -229,7 +220,9 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                     || *itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value()))
                                         break;
                                         else if(next(itr) == createdPath.end())
-                                        createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
+                                        {   
+                                            createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
+                                        }
                                     }
 
                                     for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
@@ -246,7 +239,6 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         {
                             if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
                             {
-                                //createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
                                     
                                     for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
                                     {
@@ -271,7 +263,6 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         {
                             if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
                             {
-                                //createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value(), newWeight));
 
                                     for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
                                     {
@@ -296,7 +287,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         {
                             if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
                             {
-                                //createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol + 1].value(), newWeight));
+                                
 
                                     for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
                                     {
@@ -355,6 +346,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         createdPathPtr = &(*createdPathPtrItr);  
                         neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
                         neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
+                        newWeight = createdPath.size() - neighbors.size() + 1;
                         //neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // get a new reference list of vertex
                     }
                     /*
@@ -407,10 +399,9 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     }
                 */
                       
-                }      
-            }
+            }// end of if(firstPass)      
+            }// end of for(col)
              
-            }
             // really no better way to exit quicker that I know of for now 
             if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
             && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
@@ -418,7 +409,10 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 done = true;
                 break;
             }
-        }       
+
+            }// end of for(row)
+
+        }        
     }
     
     void usePath()

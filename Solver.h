@@ -346,7 +346,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         createdPathPtr = &(*createdPathPtrItr);  
                         neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
                         neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
-                        newWeight = createdPath.size() - neighbors.size() + 1;
+                        newWeight = createdPath.size() - neighbors.size() + 2; 
                         //neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // get a new reference list of vertex
                     }
                     /*

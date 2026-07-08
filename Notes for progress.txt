@@ -1,9 +1,0 @@
-// This wouldn't make sense as much now as I need to pair up multiple neighbors 
-                // Execute watch the allocation path they are linked to a neighbor.front() 
-                // issue is popping off the neighbor to early as it's adjacent vertex isn't considered would consider it lost
-                // utilize the iteration until one is thourghly utilized and pop it off move to the next until 
-                // but because neighbors2 uses the last node in the list I might need to use a deque with multiple list 
-                // this would consider every neighbor if there is more than one I push back the entire list into that list of neighbor2
-                // That entire list should then more than surely meet a cross chech 
-                // so finally make the weighing functional and delete the heavy edge 
-                // this can be within the createdPath list using standard functionality along with weight()

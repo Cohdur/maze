@@ -39,6 +39,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     int colForEnd;
     int IndexKeyForEnd;
     double weight = 1;
+    int createdPathSize = 0;
 
     bool CheckCellFromVectorListofVertices(int row, int col)
     {
@@ -108,16 +109,16 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         //control operation tokens
         bool done = false;
         bool firstPass = false;
-        list<Edge> edges;
-        vector<list<Edge>> TotalNeighborsList; // not being used
+        list<Edge> edges; // not being used 
         
         //typename list<Edge>::const_iterator EdgePtrItr;
         //const Edge* ptrEdges = nullptr;
-
+        
         typename list<Edge>::const_iterator createdPathPtrItr;
         const Edge* createdPathPtr = nullptr;
-
+        
         list<Edge> neighbors; 
+        vector<list<Edge>> TotalNeighborsList; 
         list<Edge> neighbors2; // neighbor of a neighbor 
         
 
@@ -177,9 +178,9 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     if(r == 15 && c == 15)
                     {
                         firstPass = true;
-                        
+                        createdPathSize = createdPath.size();
                         // itital assignment 
-                        edges = graphObj.edges();
+                        //edges = graphObj.edges();
                         //EdgePtrItr = edges.begin();
                         //ptrEdges = &(*EdgePtrItr); // can change to just direct object reference instead of edges
                         //neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
@@ -340,64 +341,30 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     break;
                 }
                 
-                    if(createdPathPtrItr != createdPath.end() && createdPath.size() > 1)
-                    {
-                        ++createdPathPtrItr; // one pass  
-                        createdPathPtr = &(*createdPathPtrItr);  
-                        neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
-                        neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
-                        newWeight = createdPath.size() - neighbors.size() + 2; 
-                        //neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second); // get a new reference list of vertex
-                    }
-                    /*
-                    else if(createdPathPtrItr != createdPath.end() && createdPath.size() == 1)
-                    {
-                        neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
-                        neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second); // this is the second time I needed to use this O(n) operation  
-                    } 
-                    */
-                    else done = true;
-
-                // looking into just the optimal way of incident edges
-                /*
-                if(EdgePtrItr != edges.end())
-                {    
-                    ++EdgePtrItr;
-                    ptrEdges = &(*EdgePtrItr);
-                } 
-                else if(EdgePtrItr == edges.end())
+                if(createdPathPtrItr != createdPath.end() && createdPath.size() > 1)
                 {
-                    EdgePtrItr = edges.begin(); // recheck if this is needed
-                    ptrEdges = &(*EdgePtrItr);
-                } 
-                    while(!graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
+                    // this is fine as long as it's advancing with the best edge case
+                    // so I need to utilize both neighbors lists until they meet at vertex point
+                    // eliminate the heavier option push back the lighter to createdPath 
+                    // advance and repeat
+                    if(createdPathSize != createdPath.size())
                     {
-                        //ptrEdges = &(*EdgePtrItr);
-
-                        if(EdgePtrItr == edges.end())
-                        {
-                            EdgePtrItr = edges.begin(); // circle back around 
-                            ptrEdges = &(*EdgePtrItr);
-                            if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
-                            {
-                                // finds the neighbor should I also remove any index in here that are already listed a edges 
-                                // it possible that it can populate looping through as the logic ask for a edge 
-                                neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
-                                //neighbors2.pop_front();
-                                break;
+                       ++createdPathPtrItr; // one pass  
+                       createdPathPtr = &(*createdPathPtrItr); 
+                       neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
+                       neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
+                       // this is the starting point to idea above 
+                       if(neighbors.size() > 1)  
+                       {
+                           for(auto& neighbor : neighbors)
+                           {
+                               TotalNeighborsList.push_back(graphObj.incident_edges(graphObj.endpoints(neighbor).second));
                             }
-                        }
-
-                        if(graphObj.has_edge(graphObj.endpoints(*ptrEdges).second, neighbors2.front()))
-                        {
-                            //neighbors2.pop_front();
-                            neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
-                            break;
-                        }
-
-                        //++EdgePtrItr;                       
-                    }
-                */
+                        }                    
+                        newWeight = createdPath.size() - neighbors.size() + 2; 
+                    }                    
+                }else done = true;
+                
                       
             }// end of if(firstPass)      
             }// end of for(col)

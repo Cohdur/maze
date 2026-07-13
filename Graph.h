@@ -47,6 +47,12 @@ class Graph
         bool operator==(Vertex other) const { return vert == other.vert; }
         bool operator!=(Vertex other) const { return vert != other.vert; }
         bool operator<(Vertex other) const { return vert < other.vert; }   // arbitrary rule as map/pq key
+
+        struct Hash {
+        std::size_t operator()(const Vertex& vertex) const noexcept {
+            return std::hash<ActualVertex*>{}(vertex.vert);
+        }
+        };
     };  //---------- end of Vertex ---------
 
     //---------- nested Edge class ---------
@@ -140,7 +146,7 @@ class Graph
             result.push_back(Edge(p.second));
         return result;
     }
-    
+ 
     // Returns the (origin,destination) pair for Edge e
     std::pair<Vertex,Vertex> endpoints(Edge e) const {
         return {Vertex(e.edge->origin), Vertex(e.edge->dest)};

@@ -10,13 +10,10 @@ int main()
 
     game.Maze();
     game.pathFinder();
-    //cout << game.outputVertices() << endl;
+
     game.createEdges();
-    //game.outputCells();
-    //game.FindPath();
+
     game.usePath();
-    //game.outputmaze();
-    //game.outputEdgeCheck();
-    //game.degreeOfVertex();
+
 
 }

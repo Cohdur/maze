@@ -4,6 +4,8 @@
 #include<chrono>
 #include<climits>
 #include<optional>
+#include<unordered_map>
+#include<map>
 #include<list>
 
 #include "maze.h"
@@ -104,11 +106,13 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         // this is based on the maze size dimensions 
         int row = mazeObj.getMaze().size();
         int col = mazeObj.getMaze().at(0).size();
+        int controlNumber;
         //reassign edges 
         double newWeight = 0; 
         //control operation tokens
         bool done = false;
         bool firstPass = false;
+        bool startWalk = false;
         list<Edge> edges; // not being used 
         
         //typename list<Edge>::const_iterator EdgePtrItr;
@@ -117,9 +121,12 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         typename list<Edge>::const_iterator createdPathPtrItr;
         const Edge* createdPathPtr = nullptr;
         
-        list<Edge> neighbors; 
-        vector<list<Edge>> TotalNeighborsList; 
-        list<Edge> neighbors2; // neighbor of a neighbor 
+        list<Vertex> neighbors; 
+        list<Edge> tempRef; // not being used 
+
+        unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathA; // projecting outward so only use one for all possibilities 
+        unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathB; 
+        unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathC; 
         
 
         while(!done)
@@ -152,10 +159,10 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         //reset the count 
                         r = 0;
                         c = 0;
+                        }
                     }
-                }
-                    else if(!firstPass && graphObj.edges().size() != 0)
-                {
+                    else if(!firstPass && graphObj.edges().size() != 0) 
+                    {
                     if(mazeObj.getMaze().at(r).at(c) == ' ' || mazeObj.getMaze().at(r).at(c) == 'H' || mazeObj.getMaze().at(r).at(c) == 'O')
                     {
                         if(CheckCellFromVectorListofVertices(r - 1, c))
@@ -179,205 +186,91 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     {
                         firstPass = true;
                         createdPathSize = createdPath.size();
-                        // itital assignment 
-                        //edges = graphObj.edges();
-                        //EdgePtrItr = edges.begin();
-                        //ptrEdges = &(*EdgePtrItr); // can change to just direct object reference instead of edges
-                        //neighbors = graphObj.neighbors(graphObj.endpoints(*ptrEdges).first);
-                        
                         createdPathPtrItr = createdPath.begin();
                         createdPathPtr = &(*createdPathPtrItr);
-                        neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
-                        neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
-                        newWeight = createdPath.size() + 1; // intial edge is 2 
-                        //neighbors2 = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).second);
-                        //neighbors2.remove(graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second, false));
+                        pathA.insert({graphObj.endpoints(*createdPathPtr).second, graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second)});
+                        startWalk = true;
+
                     } 
                     
                 }
-                
-                if(firstPass)
-                {                      
-                    // I can possibly just use a single while loop after assigning all the edges since adjacent_edges retrieves the info
-                    // move the for loops closing brackets to above this if()
-                    
-                    int localRow = r;
-                    int localCol = c;
-                    
-                    // Soon I'll have to start removing unnecassary weight 
-                    
-                    while(!neighbors2.empty() && !neighbors.empty())
-                    {       
-                        if(mazeObj.getMaze().at(localRow).at(localCol) == ' ' || mazeObj.getMaze().at(localRow).at(localCol) == 'H' || mazeObj.getMaze().at(localRow).at(localCol) == 'O')
-                        {
-                            
-                            if(CheckCellFromVectorListofVertices(localRow - 1, localCol))
-                            {
-                                if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
-                                {
-                                    for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
-                                    {
-                                        if(*itr == graphObj.get_edge(cellToVertex[localRow - 1][localCol].value(), cellToVertex[localRow][localCol].value())
-                                    || *itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value()))
-                                        break;
-                                        else if(next(itr) == createdPath.end())
-                                        {   
-                                            createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow - 1][localCol].value(), newWeight));
-                                        }
-                                    }
 
-                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
-                                    {   
-                                        if(graphObj.endpoints(*itr).second == cellToVertex[localRow-1][localCol])
-                                        {
-                                            itr = neighbors2.erase(itr); 
-                                        } 
-                                        else ++itr;
-                                    }
-                                }
-                            }
-                        if(CheckCellFromVectorListofVertices(localRow + 1, localCol))
-                        {
-                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
-                            {
-                                    
-                                    for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
-                                    {
-                                        if(*itr == graphObj.get_edge(cellToVertex[localRow + 1][localCol].value(), cellToVertex[localRow][localCol].value())
-                                    || *itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value()))
-                                        break;
-                                        else if(next(itr) == createdPath.end())
-                                        createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow + 1][localCol].value(), newWeight));
-                                    }
-                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
-                                    {
-                                        if(graphObj.endpoints(*itr).second == cellToVertex[localRow+1][localCol]) 
-                                        {
-                                            itr = neighbors2.erase(itr);
-                                            break;
-                                        }
-                                        else ++itr;
-                                    }
-                            }
-                        }
-                        if(CheckCellFromVectorListofVertices(localRow, localCol - 1))
-                        {
-                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
-                            {
-
-                                    for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
-                                    {
-                                        if(*itr == graphObj.get_edge(cellToVertex[localRow][localCol - 1].value(), cellToVertex[localRow][localCol].value())
-                                    || *itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow][localCol - 1].value()))
-                                        break;
-                                        else if(next(itr) == createdPath.end())
-                                        createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol - 1].value(), newWeight));
-                                    }
-                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
-                                    {
-                                        if(graphObj.endpoints(*itr).second == cellToVertex[localRow][localCol-1])
-                                        {
-                                            itr = neighbors2.erase(itr);
-                                            break;
-                                        }
-                                        else ++itr;
-                                    }
-                            }
-                        }
-                        if(CheckCellFromVectorListofVertices(localRow, localCol + 1))
-                        {
-                            if(!neighbors2.empty() && cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
-                            {
-                                
-
-                                    for(auto itr = createdPath.begin(); itr != createdPath.end(); ++itr)
-                                    {
-                                        if(*itr == graphObj.get_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol+ 1].value())
-                                    || *itr == graphObj.get_edge(cellToVertex[localRow][localCol + 1].value(), cellToVertex[localRow ][localCol].value()))
-                                        break;
-                                        else if(next(itr) == createdPath.end())
-                                        createdPath.push_back(graphObj.insert_edge(cellToVertex[localRow][localCol].value(), cellToVertex[localRow ][localCol+1].value(), newWeight));
-                                    }
-                                    for(auto itr = neighbors2.begin(); itr != neighbors2.end();)
-                                    {
-                                        if(graphObj.endpoints(*itr).second == cellToVertex[localRow][localCol+1]) 
-                                        {
-                                            itr = neighbors2.erase(itr);
-                                            break;
-                                        }
-                                        else ++itr;
-                                    }
-                            }
-
-                            if(cellToVertex[localRow][localCol] == graphObj.endpoints(neighbors.front()).second)
-                            {
-                                neighbors.pop_front(); // I assume that the origin isn't worth noting 
-                            }
-                        }
-                        
-                    }
-                    if(localCol < 15)
-                    localCol++;
-                    
-                    else if(localCol == 15)
-                    {
-                        if(localRow < 15)
-                        {
-                            localCol = 0;
-                            localRow++;
-                        }
-                        else
-                        {
-                            localCol = 0;
-                            localRow = 0;
-                        } 
-                    }
-                    
                 }
+            }    
+            
+                // instead maybe use a sentinal value to propigate the logic of weighing into a extended edge to find a common vertex and check the weight amongst them 
+                   
                 if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
                 && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
                 {
                     done = true;
                     break;
                 }
-                
-                if(createdPathPtrItr != createdPath.end() && createdPath.size() > 1)
+                // ok the incoming map from incident_edges() can be used to see if the current paths are meeting somewhere.
+                while(startWalk)
                 {
-                    // this is fine as long as it's advancing with the best edge case
-                    // so I need to utilize both neighbors lists until they meet at vertex point
-                    // eliminate the heavier option push back the lighter to createdPath 
-                    // advance and repeat
-                    if(createdPathSize != createdPath.size())
+                    list<Edge> incomingRef;
+                    list<Edge> updatedPath;
+                    for(auto walk = pathA.begin(); walk != pathA.end(); ++walk)
                     {
-                       ++createdPathPtrItr; // one pass  
-                       createdPathPtr = &(*createdPathPtrItr); 
-                       neighbors = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first);  
-                       neighbors2 = graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second);
-                       // this is the starting point to idea above 
-                       if(neighbors.size() > 1)  
-                       {
-                           for(auto& neighbor : neighbors)
-                           {
-                               TotalNeighborsList.push_back(graphObj.incident_edges(graphObj.endpoints(neighbor).second));
-                            }
-                        }                    
-                        newWeight = createdPath.size() - neighbors.size() + 2; 
-                    }                    
-                }else done = true;
-                
-                      
-            }// end of if(firstPass)      
-            }// end of for(col)
-             
-            // really no better way to exit quicker that I know of for now 
-            if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
-            && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
-            {
-                done = true;
-                break;
-            }
+                        tempRef = walk->second;
+                        incomingRef = graphObj.incident_edges(graphObj.endpoints(tempRef.front()).second); // looking to balance a merge
 
-            }// end of for(row)
+                        for(auto itr = walk->second.begin(); itr != walk->second.end(); ++itr )
+                        {
+                            pathA.insert({walk->first, updatedPath.push_back(graphObj.insert_edge(walk->first, graphObj.endpoints(*itr).second, 2.0))}); // slight change to 2.0
+                        }
+                        
+
+                    }
+                }
+    
+                // end of while(startWalk)      
+                    
+                    if(createdPathPtrItr != createdPath.end()) 
+                    {
+                        // 
+                        if(createdPathSize != createdPath.size())
+                        {                           
+                            // not really liking this design 
+                            /*
+                            
+                            neighbors = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).first);
+                            if(neighbors.size() == 3)
+                            {
+                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
+                                neighbors.pop_front();
+                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
+                                neighbors.pop_front();
+                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
+                                neighbors.pop_front();
+                                startWalk = true;
+                                
+                            }
+                            else if(neighbors.size() == 2)
+                            {
+                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
+                                neighbors.pop_front();
+                                pathB.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
+                                neighbors.pop_front();
+                                startWalk = true;
+                                
+                            }
+                            else if(neighbors.size() == 1)
+                            {
+                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
+                                neighbors.pop_front();
+                                startWalk = true;
+                                controlNumber = 1;
+                            }
+                            ++createdPathPtrItr; // one pass  
+                            createdPathPtr = &(*createdPathPtrItr); 
+                            */                           
+                            //newWeight = createdPath.size() - neighbors.size() + 2; // this would need to more dynamic per edge so not here 
+                        }                    
+                    }else done = true;
+                      
+             
 
         }        
     }

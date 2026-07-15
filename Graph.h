@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <list>
+#include <algorithm>
 
 template<typename V, typename E>
 class Graph
@@ -144,6 +145,17 @@ class Graph
         IncidenceMap& adj(outgoing || !directed ? v.vert->outgoing : v.vert->incoming);
         for (auto p : adj)                          // p is {ActualVertex*,ActualEdge*} pair
             result.push_back(Edge(p.second));
+        return result;
+    }
+    std::list<Edge> incident_edges_X(Vertex v, Vertex vertex_backTrack, bool outgoing = true) const {
+        std::list<Edge> result;
+        IncidenceMap& adj(outgoing || !directed ? v.vert->outgoing : v.vert->incoming);
+        for (auto p : adj)
+        {
+            Edge tempAdj = p.second;
+            if(endpoints(tempAdj).second != vertex_backTrack)
+            result.push_back(Edge(p.second));
+        }                          // p is {ActualVertex*,ActualEdge*} pair
         return result;
     }
  

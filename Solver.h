@@ -108,25 +108,31 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         int col = mazeObj.getMaze().at(0).size();
         int controlNumber;
         //reassign edges 
-        double newWeight = 0; 
+        double newWeight = 0;
+    
         //control operation tokens
         bool done = false;
         bool firstPass = false;
         bool startWalk = false;
-        list<Edge> edges; // not being used 
         
         //typename list<Edge>::const_iterator EdgePtrItr;
         //const Edge* ptrEdges = nullptr;
         
         typename list<Edge>::const_iterator createdPathPtrItr;
         const Edge* createdPathPtr = nullptr;
+        list<Edge> tempRef;  
+        list<Edge> updatedPath;
         
-        list<Vertex> neighbors; 
-        list<Edge> tempRef; // not being used 
+        list<Vertex> VertexOrder; // there is no order insertion this is the key for returning the maps order of walked path
+        typename list<Vertex>::const_iterator neighborPtrItr;
+        const Vertex* neighborPtr = nullptr;
 
-        unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathA; // projecting outward so only use one for all possibilities 
-        unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathB; 
-        unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathC; 
+        
+
+        unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathA; // projecting outward so only use one for all possibilities
+        typename unordered_map<Vertex, list<Edge>, typename Vertex::Hash>::iterator pathAPtrItr; 
+        const Vertex* pathAPtr = nullptr;
+
         
 
         while(!done)
@@ -188,9 +194,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         createdPathSize = createdPath.size();
                         createdPathPtrItr = createdPath.begin();
                         createdPathPtr = &(*createdPathPtrItr);
-                        pathA.insert({graphObj.endpoints(*createdPathPtr).second, graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).second)});
+                        pathA.insert({graphObj.endpoints(*createdPathPtr).first, graphObj.incident_edges_X(graphObj.endpoints(*createdPathPtr).first, graphObj.endpoints(*createdPathPtr).first)});
+                        VertexOrder.push_back(graphObj.endpoints(*createdPathPtr).first);
+                        tempRef = graphObj.incident_edges_X(graphObj.endpoints(*createdPathPtr).second, graphObj.endpoints(*createdPathPtr).first);
+                        
                         startWalk = true;
-
                     } 
                     
                 }
@@ -206,72 +214,43 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     done = true;
                     break;
                 }
-                // ok the incoming map from incident_edges() can be used to see if the current paths are meeting somewhere.
+                // if needs to check or not ?? 
                 while(startWalk)
                 {
-                    list<Edge> incomingRef;
-                    list<Edge> updatedPath;
-                    for(auto walk = pathA.begin(); walk != pathA.end(); ++walk)
+                    if(pathA.size() > 1)
                     {
-                        tempRef = walk->second;
-                        incomingRef = graphObj.incident_edges(graphObj.endpoints(tempRef.front()).second); // looking to balance a merge
-
-                        for(auto itr = walk->second.begin(); itr != walk->second.end(); ++itr )
-                        {
-                            pathA.insert({walk->first, updatedPath.push_back(graphObj.insert_edge(walk->first, graphObj.endpoints(*itr).second, 2.0))}); // slight change to 2.0
-                        }
-                        
-
+                        cout << "x";
                     }
-                }
-    
-                // end of while(startWalk)      
-                    
-                    if(createdPathPtrItr != createdPath.end()) 
+                    list<Edge> incomingRef;
+                    Vertex tempVertex; 
+                    pathA.insert({graphObj.endpoints(tempRef.front()).first, tempRef});
+                    VertexOrder.push_back(graphObj.endpoints(tempRef.front()).first);
+                    //  pathA.insert({graphObj.endpoints(tempRef.front()).first, tempRef})
+                    // needs a weight function
+                    /*
+                    if(!tempRef.empty())
                     {
-                        // 
-                        if(createdPathSize != createdPath.size())
-                        {                           
-                            // not really liking this design 
-                            /*
-                            
-                            neighbors = graphObj.neighbors(graphObj.endpoints(*createdPathPtr).first);
-                            if(neighbors.size() == 3)
-                            {
-                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
-                                neighbors.pop_front();
-                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
-                                neighbors.pop_front();
-                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
-                                neighbors.pop_front();
-                                startWalk = true;
-                                
-                            }
-                            else if(neighbors.size() == 2)
-                            {
-                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
-                                neighbors.pop_front();
-                                pathB.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
-                                neighbors.pop_front();
-                                startWalk = true;
-                                
-                            }
-                            else if(neighbors.size() == 1)
-                            {
-                                pathA.insert({graphObj.endpoints(neighbors.front()).first, graphObj.incident_edges(graphObj.endpoints(neighbors.front()).first)});
-                                neighbors.pop_front();
-                                startWalk = true;
-                                controlNumber = 1;
-                            }
-                            ++createdPathPtrItr; // one pass  
-                            createdPathPtr = &(*createdPathPtrItr); 
-                            */                           
-                            //newWeight = createdPath.size() - neighbors.size() + 2; // this would need to more dynamic per edge so not here 
-                        }                    
-                    }else done = true;
+                       //incomingRef = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second); // looking to balance a merge
+                       tempVertex = graphObj.endpoints(tempRef.front()).first; // this should be the same vertex origin for all
+                       tempRef.pop_front();
+                    }else
+                    {
+                        pathA.insert({tempVertex, std::move(updatedPath)});
+                        tempRef = graphObj.incident_edges_X(tempVertex);
+                        incomingRef = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second); // looking to balance a merge
+                        tempVertex = graphObj.endpoints(tempRef.front()).first;
+                        tempRef.pop_front(); 
+                    }
+
+                    for(const Edge& itr : incomingRef)
+                    {
+                        Edge newEdge = graphObj.insert_edge(tempVertex, graphObj.endpoints(itr).second, 2.0);
+                        updatedPath.push_back(newEdge);
+                    }                   
+                    */
+                }// end of while(startWalk)
                       
              
-
         }        
     }
     

@@ -3,10 +3,13 @@
 #include<thread>
 #include<chrono>
 #include<climits>
+#include<functional>
+
+#include<list>
+#include<queue>
+#include<vector>
 #include<optional>
 #include<unordered_map>
-#include<map>
-#include<list>
 
 #include "maze.h"
 #include "Graph.h"
@@ -115,21 +118,26 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         bool firstPass = false;
         bool startWalk = false;
         
-        //typename list<Edge>::const_iterator EdgePtrItr;
-        //const Edge* ptrEdges = nullptr;
         
         typename list<Edge>::const_iterator createdPathPtrItr;
         const Edge* createdPathPtr = nullptr;
+        list<Edge> createdPath;
+
         list<Edge> tempRef;  
-        list<Edge> updatedPath;
+        struct EdgeWeightGreater {
+            bool operator()(const Edge& a, const Edge& b) const {
+                return a.weight() > b.weight();
+            }
+        };
+        priority_queue<Edge, vector<Edge>, EdgeWeightGreater> matchedVertex; // lightest edge
         
         list<Vertex> VertexOrder; // there is no order insertion this is the key for returning the maps order of walked path
         typename list<Vertex>::const_iterator neighborPtrItr;
         const Vertex* neighborPtr = nullptr;
 
         
-
         unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathA; // projecting outward so only use one for all possibilities
+
         typename unordered_map<Vertex, list<Edge>, typename Vertex::Hash>::iterator pathAPtrItr; 
         const Vertex* pathAPtr = nullptr;
 
@@ -194,10 +202,17 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         createdPathSize = createdPath.size();
                         createdPathPtrItr = createdPath.begin();
                         createdPathPtr = &(*createdPathPtrItr);
+
                         pathA.insert({graphObj.endpoints(*createdPathPtr).first, graphObj.incident_edges_X(graphObj.endpoints(*createdPathPtr).first, graphObj.endpoints(*createdPathPtr).first)});
+                        newWeight = pathA.begin()->second.front().weight() + pathA.begin()->second.size();
+                        graphObj.insert_edge(pathA.begin()->first, graphObj.endpoints(pathA.begin()->second.front()).second, newWeight);
                         VertexOrder.push_back(graphObj.endpoints(*createdPathPtr).first);
+
                         tempRef = graphObj.incident_edges_X(graphObj.endpoints(*createdPathPtr).second, graphObj.endpoints(*createdPathPtr).first);
-                        
+                        pathA.insert({graphObj.endpoints(tempRef.front()).first, tempRef});
+                        newWeight = pathA[graphObj.endpoints(tempRef.front()).first].front().weight() + pathA[graphObj.endpoints(tempRef.front()).first].size();
+                        graphObj.insert_edge(graphObj.endpoints(tempRef.front()).first, graphObj.endpoints(tempRef.front()).second, newWeight);
+                        VertexOrder.push_back(graphObj.endpoints(tempRef.front()).first); // these are all the same origin vertex
                         startWalk = true;
                     } 
                     
@@ -207,7 +222,10 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             }    
             
                 // instead maybe use a sentinal value to propigate the logic of weighing into a extended edge to find a common vertex and check the weight amongst them 
-                   
+                for(auto chk : VertexOrder)
+                {
+                    cout << pathA[chk].front().weight() << endl;
+                }
                 if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
                 && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
                 {
@@ -217,37 +235,49 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 // if needs to check or not ?? 
                 while(startWalk)
                 {
-                    if(pathA.size() > 1)
+                    if(tempRef.size() > 1)
                     {
-                        cout << "x";
-                    }
-                    list<Edge> incomingRef;
-                    Vertex tempVertex; 
-                    pathA.insert({graphObj.endpoints(tempRef.front()).first, tempRef});
-                    VertexOrder.push_back(graphObj.endpoints(tempRef.front()).first);
-                    //  pathA.insert({graphObj.endpoints(tempRef.front()).first, tempRef})
-                    // needs a weight function
-                    /*
-                    if(!tempRef.empty())
-                    {
-                       //incomingRef = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second); // looking to balance a merge
-                       tempVertex = graphObj.endpoints(tempRef.front()).first; // this should be the same vertex origin for all
-                       tempRef.pop_front();
-                    }else
-                    {
-                        pathA.insert({tempVertex, std::move(updatedPath)});
-                        tempRef = graphObj.incident_edges_X(tempVertex);
-                        incomingRef = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second); // looking to balance a merge
-                        tempVertex = graphObj.endpoints(tempRef.front()).first;
-                        tempRef.pop_front(); 
-                    }
+                        list<Edge> stemmedTree;
+                        map<Vertex, list<Edge>> tempMap;// figure which path is being OR just update path A
+                        bool end = false;
+                        while(!end)
+                        {
+                            for(auto i : tempRef)
+                            {
+                                stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(i).second, graphObj.endpoints(i).first);
+                                tempMap.insert({graphObj.endpoints(i).second, stemmedTree});
+                                //pathA.insert({graphObj.endpoints(i).second, stemmedTree});
+                                //VertexOrder.push_back(graphObj.endpoints(i).second);
+                            }
 
-                    for(const Edge& itr : incomingRef)
+                        }
+                        // traverse the list and keep a temp reference of each list to compare for similar destination vertex
+                        // priority revered queue to keep a list of edges per vertex that meet. 
+                        // Can't assume it's the fastest to the end but current fastest to a point.
+                        // another match means re-iterating past matches to see if the connect ? get weight of both replace the old path with the extended check the new paths 
+                        // stil can't assume fastest : input the new path (somehow this should detach as they would meet or end)
+                    }
+                    else if(tempRef.size() == 1)
                     {
-                        Edge newEdge = graphObj.insert_edge(tempVertex, graphObj.endpoints(itr).second, 2.0);
-                        updatedPath.push_back(newEdge);
-                    }                   
-                    */
+                        /*
+                        stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(i).second, graphObj.endpoints(i).first);
+                        pathA.insert({graphObj.endpoints(i).second, stemmedTree});
+                        VertexOrder.push_back(graphObj.endpoints(i).second);
+                        */
+                         
+                    }
+                        // here it travereses the list vertexOrder.back() to get the next tree 
+                        // push that back with it's own stemed tree
+                        // return to the original then to the next one possible with a for loop 
+                        // check for any matches that of which need the weight function to be working with considered logic
+                        // if a third same idea
+                        // then return to the original stemmed tree from .back() do it all over again 
+                        // jump back if other edges exists to check those 
+                        // I need to see some compiled examples but some of these should be dead ends any way or trimmed off due to deviation from the next
+                    
+                    // these two were already inserted above change the logic 
+                    cout << "x";
+
                 }// end of while(startWalk)
                       
              

@@ -123,7 +123,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         const Edge* createdPathPtr = nullptr;
         list<Edge> createdPath;
 
-        list<Edge> tempRef;  
+        list<Edge> tempRef;
+          
         struct EdgeWeightGreater {
             bool operator()(const Edge& a, const Edge& b) const {
                 return a.weight() > b.weight();
@@ -221,11 +222,12 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 }
             }    
             
-                // instead maybe use a sentinal value to propigate the logic of weighing into a extended edge to find a common vertex and check the weight amongst them 
+                /* USE THIS TO TEST THE ADDITONAL WEIGHTS BEING ADDED TO THE GRAPH
                 for(auto chk : VertexOrder)
                 {
                     cout << pathA[chk].front().weight() << endl;
                 }
+                */ 
                 if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
                 && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
                 {
@@ -238,19 +240,23 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     if(tempRef.size() > 1)
                     {
                         list<Edge> stemmedTree;
-                        map<Vertex, list<Edge>> tempMap;// figure which path is being OR just update path A
+                        list<Edge> tempListsReverse; // this is the extended tree lists to use in the comaprison 
+
+                        map<Vertex, list<Edge>> tempMap;
+                        vector<Vertex> tempMapKeys;
                         bool end = false;
                         while(!end)
                         {
                             for(auto i : tempRef)
                             {
-                                stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(i).second, graphObj.endpoints(i).first);
+                                stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(i).second, graphObj.endpoints(i).first ); // quickly check for matches 
+                                
                                 tempMap.insert({graphObj.endpoints(i).second, stemmedTree});
-                                //pathA.insert({graphObj.endpoints(i).second, stemmedTree});
-                                //VertexOrder.push_back(graphObj.endpoints(i).second);
+                                tempMapKeys.push_back(graphObj.endpoints(i).second); 
                             }
-
+                            
                         }
+                        
                         // traverse the list and keep a temp reference of each list to compare for similar destination vertex
                         // priority revered queue to keep a list of edges per vertex that meet. 
                         // Can't assume it's the fastest to the end but current fastest to a point.

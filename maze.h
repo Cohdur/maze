@@ -2,7 +2,6 @@
 #include<iostream>
 #include<ctime>
 #include<random>
-#include<map> //no longer involved in this file DELETE IN FINAL VERSION
 #include<list>
 #include<memory>
 

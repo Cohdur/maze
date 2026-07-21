@@ -1,15 +1,11 @@
-#include<iostream>
 #include<sstream>
 #include<thread>
 #include<chrono>
 #include<climits>
 #include<functional>
-
-#include<list>
 #include<queue>
-#include<vector>
 #include<optional>
-#include<unordered_map>
+#include<map>
 
 #include "maze.h"
 #include "Graph.h"
@@ -204,18 +200,24 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         createdPathPtrItr = createdPath.begin();
                         createdPathPtr = &(*createdPathPtrItr);
 
-                        pathA.insert({graphObj.endpoints(*createdPathPtr).first, graphObj.incident_edges_X(graphObj.endpoints(*createdPathPtr).first, graphObj.endpoints(*createdPathPtr).first)});
+                        pathA.insert({graphObj.endpoints(*createdPathPtr).first, graphObj.incident_edges(graphObj.endpoints(*createdPathPtr).first)});
                         newWeight = pathA.begin()->second.front().weight() + pathA.begin()->second.size();
                         graphObj.insert_edge(pathA.begin()->first, graphObj.endpoints(pathA.begin()->second.front()).second, newWeight);
                         VertexOrder.push_back(graphObj.endpoints(*createdPathPtr).first);
 
                         tempRef = graphObj.incident_edges_X(graphObj.endpoints(*createdPathPtr).second, graphObj.endpoints(*createdPathPtr).first);
                         pathA.insert({graphObj.endpoints(tempRef.front()).first, tempRef});
-                        newWeight = pathA[graphObj.endpoints(tempRef.front()).first].front().weight() + pathA[graphObj.endpoints(tempRef.front()).first].size();
-                        graphObj.insert_edge(graphObj.endpoints(tempRef.front()).first, graphObj.endpoints(tempRef.front()).second, newWeight);
+
+                        for(auto i : tempRef)
+                        {
+                            // one origin two or more vertex need to be weighed based on distance from start 
+                            newWeight = pathA[graphObj.endpoints(tempRef.front()).first].front().weight() + graphObj.get_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second).weight();
+                            graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight);
+                        }
+
                         VertexOrder.push_back(graphObj.endpoints(tempRef.front()).first); // these are all the same origin vertex
                         startWalk = true;
-                    } 
+                    } // pathA is pushing back a extra vertex with a empty list?? ////////////
                     
                 }
 
@@ -237,6 +239,14 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 // if needs to check or not ?? 
                 while(startWalk)
                 {
+                    if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
+                    && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
+                    {
+                        done = true;
+                        startWalk = false;
+                        break;
+                    }
+
                     if(tempRef.size() > 1)
                     {
                         list<Edge> stemmedTree;
@@ -247,13 +257,24 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         bool end = false;
                         while(!end)
                         {
-                            for(auto i : tempRef)
+                            // check for matches here through a extended scope weighing a pushing into either pq or map 
+                            // for the base function of insert edge I need to put the edges in based on their individual weights 
+                            // per move? only way the system will know the best option using comparison
+                            if(!tempRef.empty())
                             {
-                                stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(i).second, graphObj.endpoints(i).first ); // quickly check for matches 
-                                
-                                tempMap.insert({graphObj.endpoints(i).second, stemmedTree});
-                                tempMapKeys.push_back(graphObj.endpoints(i).second); 
-                            }
+                                stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second, graphObj.endpoints(tempRef.front()).first); // quickly check for matches
+                                for(auto i : stemmedTree)
+                                {                                
+                                   newWeight = tempRef.front().weight() + i.weight(); 
+                                   graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight);                               
+                                   tempMap.insert({graphObj.endpoints(i).first, stemmedTree});
+                                   tempMapKeys.push_back(graphObj.endpoints(i).first);                                  
+                                }
+                                tempRef.pop_front();                                  
+                            } // so look for matches the assignment is already started for tempRef use tempRef.move(stemmedTree) for the next wave 
+                            else
+                            tempRef = move(stemmedTree); // this is the next wave of edges to check for matches
+
                             
                         }
                         
@@ -263,15 +284,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         // another match means re-iterating past matches to see if the connect ? get weight of both replace the old path with the extended check the new paths 
                         // stil can't assume fastest : input the new path (somehow this should detach as they would meet or end)
                     }
-                    else if(tempRef.size() == 1)
-                    {
-                        /*
-                        stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(i).second, graphObj.endpoints(i).first);
-                        pathA.insert({graphObj.endpoints(i).second, stemmedTree});
-                        VertexOrder.push_back(graphObj.endpoints(i).second);
-                        */
-                         
-                    }
+
                         // here it travereses the list vertexOrder.back() to get the next tree 
                         // push that back with it's own stemed tree
                         // return to the original then to the next one possible with a for loop 
@@ -281,8 +294,6 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         // jump back if other edges exists to check those 
                         // I need to see some compiled examples but some of these should be dead ends any way or trimmed off due to deviation from the next
                     
-                    // these two were already inserted above change the logic 
-                    cout << "x";
 
                 }// end of while(startWalk)
                       

@@ -6,6 +6,8 @@
 #include<queue>
 #include<optional>
 #include<map>
+#include<utility> 
+#include<ranges>
 
 #include "maze.h"
 #include "Graph.h"
@@ -121,12 +123,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
         list<Edge> tempRef;
           
-        struct EdgeWeightGreater {
-            bool operator()(const Edge& a, const Edge& b) const {
-                return a.weight() > b.weight();
-            }
-        };
-        priority_queue<Edge, vector<Edge>, EdgeWeightGreater> matchedVertex; // lightest edge
+        vector<std::pair<Vertex, Edge>> matchedVertex;
         
         list<Vertex> VertexOrder; // there is no order insertion this is the key for returning the maps order of walked path
         typename list<Vertex>::const_iterator neighborPtrItr;
@@ -239,6 +236,12 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                 // if needs to check or not ?? 
                 while(startWalk)
                 {
+                    list<Edge> stemmedTree;
+                    list<Edge> tempListsReverse; // this is the extended tree lists to use in the comaprison 
+                    map<Vertex, list<Edge>> tempMap;
+                    vector<Vertex> tempMapKeys;
+                    bool end = false;
+
                     if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
                     && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
                     {
@@ -247,43 +250,107 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         break;
                     }
 
-                    if(tempRef.size() > 1)
+                    while(!end)
                     {
-                        list<Edge> stemmedTree;
-                        list<Edge> tempListsReverse; // this is the extended tree lists to use in the comaprison 
-
-                        map<Vertex, list<Edge>> tempMap;
-                        vector<Vertex> tempMapKeys;
-                        bool end = false;
-                        while(!end)
+                        // check for matches here through a extended scope weighing a pushing into either pq or map 
+                        // for the base function of insert edge I need to put the edges in based on their individual weights 
+                        // per move? only way the system will know the best option using comparison
+                        if(!tempRef.empty())
                         {
-                            // check for matches here through a extended scope weighing a pushing into either pq or map 
-                            // for the base function of insert edge I need to put the edges in based on their individual weights 
-                            // per move? only way the system will know the best option using comparison
-                            if(!tempRef.empty())
+                            stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second, graphObj.endpoints(tempRef.front()).first); // quickly check for matches
+                            for(auto i : stemmedTree)
+                            {                                
+                                newWeight = tempRef.front().weight() + i.weight(); 
+                                graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight);                               
+                                tempMap.insert({graphObj.endpoints(i).first, stemmedTree}); // the key is the third vertex from pathA at the start of this map A -> B -> C (depends on how many edges B had)
+                                tempMapKeys.push_back(graphObj.endpoints(i).first);                                  
+                            }
+                            tempRef.pop_front(); 
+                        } // so look for matches the assignment is already started for tempRef use tempRef.move(stemmedTree) for the next wave 
+                        else
+                        {
+                            bool checkCurrentEdges = true;
+                            while(checkCurrentEdges == 1)
                             {
-                                stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second, graphObj.endpoints(tempRef.front()).first); // quickly check for matches
-                                for(auto i : stemmedTree)
-                                {                                
-                                   newWeight = tempRef.front().weight() + i.weight(); 
-                                   graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight);                               
-                                   tempMap.insert({graphObj.endpoints(i).first, stemmedTree});
-                                   tempMapKeys.push_back(graphObj.endpoints(i).first);                                  
+                                for(auto key : tempMapKeys)
+                                {
+                                    list<Edge> tempList = tempMap[key];
+                                    for(auto i : tempMapKeys)
+                                    {
+                                        list<Edge> tempList2 = tempMap[i];
+                                        for(auto j : tempList)
+                                        {
+                                            for(auto k : tempList2)
+                                            {
+                                                if(i != key && (graphObj.endpoints(j).second == graphObj.endpoints(k).second))
+                                                {
+                                                    // this is a match so now I need to check the weights of the two edges and see which one is lighter 
+                                                    if(j.weight() < k.weight())
+                                                    {
+                                                        
+                                                        if(!matchedVertex.empty())
+                                                        {
+                                                          for(auto m : std::views::reverse(matchedVertex))
+                                                          {
+                                                            if(!checkCurrentEdges) break;
+                                                            list<Edge> checkMatchList = tempMap[m];
+                                                            for(auto n : checkMatchList)
+                                                            {
+                                                                if(graphObj.endpoints(n).second == graphObj.endpoints(j).first)
+                                                                {
+                                                                    n.push_back(j.second);
+                                                                    checkCurrentEdges = false;
+                                                                }
+                                                            }
+                                                          }
+                                                        }
+                                                        else 
+                                                        {
+                                                            matchedVertex.push_back(graphObj.endpoints(j).second, j);
+                                                            checkCurrentEdges = false;
+                                                        }
+                                                    }
+                                                    else if(j.weight() > k.weight())
+                                                    {
+                                                      if(!matchedVertex.empty())
+                                                        {
+                                                          for(auto m : std::views::reverse(matchedVertex))
+                                                          {
+                                                            if(!checkCurrentEdges) break;
+                                                            list<Edge> checkMatchList = tempMap[m];
+                                                            for(auto n : checkMatchList)
+                                                            {
+                                                                if(graphObj.endpoints(n).second == graphObj.endpoints(k).first)
+                                                                {
+                                                                    n.push_back(k.second);
+                                                                    checkCurrentEdges = false;
+                                                                }
+                                                            }
+                                                          }
+                                                        }
+                                                        else 
+                                                        {
+                                                            matchedVertex.push_back(graphObj.endpoints(j).second, j);
+                                                            checkCurrentEdges = false;
+                                                        }  
+                                                    }
+                                                }
+                                                
+                                            }
+                                        }
+                                        
+                                    }
                                 }
-                                tempRef.pop_front();                                  
-                            } // so look for matches the assignment is already started for tempRef use tempRef.move(stemmedTree) for the next wave 
-                            else
+                            } 
                             tempRef = move(stemmedTree); // this is the next wave of edges to check for matches
-
-                            
-                        }
+                        }                        
+                    }
                         
                         // traverse the list and keep a temp reference of each list to compare for similar destination vertex
                         // priority revered queue to keep a list of edges per vertex that meet. 
                         // Can't assume it's the fastest to the end but current fastest to a point.
                         // another match means re-iterating past matches to see if the connect ? get weight of both replace the old path with the extended check the new paths 
                         // stil can't assume fastest : input the new path (somehow this should detach as they would meet or end)
-                    }
 
                         // here it travereses the list vertexOrder.back() to get the next tree 
                         // push that back with it's own stemed tree

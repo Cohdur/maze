@@ -208,7 +208,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         for(auto i : tempRef)
                         {
                             // one origin two or more vertex need to be weighed based on distance from start 
-                            newWeight = pathA[graphObj.endpoints(tempRef.front()).first].front().weight() + graphObj.get_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second).weight();
+                            newWeight = i.weight() + graphObj.get_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second).weight();
                             graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight);
                         }
 
@@ -240,6 +240,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                     list<Edge> tempListsReverse; // this is the extended tree lists to use in the comaprison 
                     map<Vertex, list<Edge>> tempMap;
                     vector<Vertex> tempMapKeys;
+                    vector<Vertex> stemmedTreeKeys;
                     bool end = false;
 
                     if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
@@ -258,6 +259,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                         if(!tempRef.empty())
                         {
                             stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second, graphObj.endpoints(tempRef.front()).first); // quickly check for matches
+                            stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first); // clear this after each use once move executes
                             for(auto i : stemmedTree)
                             {                                
                                 newWeight = tempRef.front().weight() + i.weight(); 
@@ -290,7 +292,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                                         
                                                         if(!matchedVertex.empty())
                                                         {
-                                                          for(auto m : std::views::reverse(matchedVertex))
+                                                          for(auto m : std::views::reverse(tempMapKeys))
                                                           {
                                                             if(!checkCurrentEdges) break;
                                                             list<Edge> checkMatchList = tempMap[m];
@@ -298,7 +300,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                                             {
                                                                 if(graphObj.endpoints(n).second == graphObj.endpoints(j).first)
                                                                 {
-                                                                    n.push_back(j.second);
+                                                                    tempMap[m].push_back(j);
+                                                                    tempMapKeys.push_back(graphObj.endpoints(j).first);
                                                                     checkCurrentEdges = false;
                                                                 }
                                                             }
@@ -306,7 +309,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                                         }
                                                         else 
                                                         {
-                                                            matchedVertex.push_back(graphObj.endpoints(j).second, j);
+                                                            matchedVertex.emplace_back(graphObj.endpoints(j).second, j);
                                                             checkCurrentEdges = false;
                                                         }
                                                     }
@@ -314,7 +317,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                                     {
                                                       if(!matchedVertex.empty())
                                                         {
-                                                          for(auto m : std::views::reverse(matchedVertex))
+                                                          for(auto m : std::views::reverse(tempMapKeys))
                                                           {
                                                             if(!checkCurrentEdges) break;
                                                             list<Edge> checkMatchList = tempMap[m];
@@ -322,7 +325,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                                             {
                                                                 if(graphObj.endpoints(n).second == graphObj.endpoints(k).first)
                                                                 {
-                                                                    n.push_back(k.second);
+                                                                    tempMap[m].push_back(k);
+                                                                    tempMapKeys.push_back(graphObj.endpoints(k).first);
                                                                     checkCurrentEdges = false;
                                                                 }
                                                             }
@@ -330,10 +334,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                                         }
                                                         else 
                                                         {
-                                                            matchedVertex.push_back(graphObj.endpoints(j).second, j);
+                                                            matchedVertex.emplace_back(graphObj.endpoints(j).second, j);
                                                             checkCurrentEdges = false;
                                                         }  
-                                                    }
+                                                    } // else if(j.weight() == k.weight())
+                                                    
                                                 }
                                                 
                                             }
@@ -341,25 +346,26 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                         
                                     }
                                 }
-                            } 
-                            tempRef = move(stemmedTree); // this is the next wave of edges to check for matches
+                            } // if more than one key else just use move 
+                            if(stemmedTreeKeys.size() > 1)
+                            {
+                                for(auto key : stemmedTreeKeys)
+                                {
+                                    if(!tempMap[key].empty())
+                                    {
+                                        for(auto i : tempMap[key])
+                                        {
+                                            tempRef.push_back(i);
+                                        }
+                                    }
+                                }
+                                stemmedTreeKeys.clear(); // clear for a new set of keys 
+                            }else
+                            {
+                               tempRef = move(stemmedTree); // this is the next wave of edges to check for matches
+                            }
                         }                        
                     }
-                        
-                        // traverse the list and keep a temp reference of each list to compare for similar destination vertex
-                        // priority revered queue to keep a list of edges per vertex that meet. 
-                        // Can't assume it's the fastest to the end but current fastest to a point.
-                        // another match means re-iterating past matches to see if the connect ? get weight of both replace the old path with the extended check the new paths 
-                        // stil can't assume fastest : input the new path (somehow this should detach as they would meet or end)
-
-                        // here it travereses the list vertexOrder.back() to get the next tree 
-                        // push that back with it's own stemed tree
-                        // return to the original then to the next one possible with a for loop 
-                        // check for any matches that of which need the weight function to be working with considered logic
-                        // if a third same idea
-                        // then return to the original stemmed tree from .back() do it all over again 
-                        // jump back if other edges exists to check those 
-                        // I need to see some compiled examples but some of these should be dead ends any way or trimmed off due to deviation from the next
                     
 
                 }// end of while(startWalk)

@@ -122,10 +122,12 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         list<Edge> createdPath;
 
         list<Edge> tempRef;
-          
-        vector<std::pair<Vertex, Edge>> matchedVertex;
-        
+        list<Edge> stemmedTree;
+        vector<Vertex> stemmedTreeKeys;
+
+        list<pair<Vertex, double>> lightestEdge;
         list<Vertex> VertexOrder; // there is no order insertion this is the key for returning the maps order of walked path
+
         typename list<Vertex>::const_iterator neighborPtrItr;
         const Vertex* neighborPtr = nullptr;
 
@@ -220,231 +222,141 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
                 }
             }    
-            
-                /* USE THIS TO TEST THE ADDITONAL WEIGHTS BEING ADDED TO THE GRAPH
-                for(auto chk : VertexOrder)
-                {
-                    cout << pathA[chk].front().weight() << endl;
-                }
-                */ 
-                if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
-                && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
-                {
-                    done = true;
-                    break;
-                }
-                // if needs to check or not ?? 
-                while(startWalk)
-                {
-                    list<Edge> stemmedTree;
-                    map<Vertex, list<Edge>> tempMap;
-                    vector<Vertex> tempMapKeys;
-                    vector<Vertex> stemmedTreeKeys;
-                    bool end = false;
-
-                    if(!createdPath.empty() && (graphObj.endpoints(createdPath.front()).first == cellToVertex[rowForStart][colForStart].value()) 
-                    && (graphObj.endpoints(createdPath.back()).second == cellToVertex[rowForEnd][colForEnd].value()))
-                    {
-                        done = true;
-                        startWalk = false;
-                        break;
-                    }
-
-                    while(!end)
-                    {
-                        if(!tempRef.empty())
+                    
+                        if(!pathA.empty() && (VertexOrder.front() == cellToVertex[rowForStart][colForStart].value()) 
+                        && (VertexOrder.back() == cellToVertex[rowForEnd][colForEnd].value()))
                         {
+                            done = true;
+                            break;
+                        }
+
+                        if(!tempRef.empty())
+                        {                           
                             stemmedTree = graphObj.incident_edges_X(graphObj.endpoints(tempRef.front()).second, graphObj.endpoints(tempRef.front()).first); // quickly check for matches
+                            if(stemmedTree.empty())
+                            {
+                                stemmedTree = graphObj.incident_edges(graphObj.endpoints(tempRef.front()).second);
+                                if(graphObj.endpoints(stemmedTree.front()).first == cellToVertex[rowForEnd][colForEnd].value())
+                                {
+                                    done = true;
+                                    break;
+                                }else stemmedTree.clear(); // removing the situation that uses this at dead ends suspected bug for loops
+                            }
+
                             if(stemmedTreeKeys.empty())
                             {
                                stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first);  
                             }
                             else
                             {   
-                                if(!stemmedTree.empty()) // if it doesn't return then it's the case that it found the end
+                                for(const auto& i : views::reverse(stemmedTreeKeys))
                                 {
-                                    for(auto i : views::reverse(stemmedTreeKeys))
+                                    if(i == stemmedTreeKeys.front() && i != graphObj.endpoints(stemmedTree.front()).first)
                                     {
-                                        if(i == stemmedTreeKeys.front() && i != graphObj.endpoints(stemmedTree.front()).first)
-                                        {
-                                            stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first); 
-                                        }else if(i == graphObj.endpoints(stemmedTree.front()).first) break; // no duplicates for keys 
-                                    }
-                                }
+                                        stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first); 
+                                    }else if(i == graphObj.endpoints(stemmedTree.front()).first) break; // no duplicates for keys 
+                                }                               
                             }                            
                             
-                            for(auto i : stemmedTree)
+                            for(const auto& i : stemmedTree)
                             {    // this has to be where the loop is happening                             
                                 newWeight = tempRef.front().weight() + i.weight(); 
-                                graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight);                               
-                                //tempMap.insert({graphObj.endpoints(i).first, stemmedTree}); // the key is the third vertex from pathA at the start of this map A -> B -> C (depends on how many edges B had)
-                                if(tempMap.empty())
+                                //graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight);                               
+
+                                for(const auto& j : views::reverse(VertexOrder))
                                 {
-                                    tempMap.insert({graphObj.endpoints(stemmedTree.front()).first, stemmedTree});
-                                    tempMapKeys.push_back(graphObj.endpoints(stemmedTree.front()).first);  
-                                }
-                                else
-                                {
-                                    for(auto j : views::reverse(tempMapKeys))
+                                    for(const auto& k : pathA[j])
                                     {
-                                        for(auto k : tempMap[j])
+                                        if(graphObj.endpoints(k).first == graphObj.endpoints(i).second) break;
+                                        else if(j == VertexOrder.front() && (graphObj.endpoints(k).first != graphObj.endpoints(i).second))
                                         {
-                                            if(graphObj.endpoints(k).first == graphObj.endpoints(i).second) break;
-                                            else if(j == tempMapKeys.front() && (graphObj.endpoints(k).first != graphObj.endpoints(i).second))
-                                            {
-                                                tempMap.insert({graphObj.endpoints(i).first, stemmedTree});
-                                                if(tempMapKeys.back() != graphObj.endpoints(i).first) // this is based on pattern it can be faulty 
-                                                tempMapKeys.push_back(graphObj.endpoints(i).first); 
-                                                break;
-                                            }
-                                        } 
-                                    }
-                                }
-                                
+                                            graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight); 
+                                            pathA.insert({graphObj.endpoints(i).first, stemmedTree});
+                                            if(VertexOrder.back() != graphObj.endpoints(i).first) // this is based on pattern it can be faulty 
+                                            VertexOrder.push_back(graphObj.endpoints(i).first); 
+                                            //break;
+                                        }
+                                    } 
+                                }                                                          
                             }
                             tempRef.pop_front(); 
                         } // so look for matches the assignment is already started for tempRef use tempRef.move(stemmedTree) for the next wave 
                         else
-                        {
-                            bool checkCurrentEdges = true;
-                            while(checkCurrentEdges == 1)
-                            {
-                                for(auto key : tempMapKeys)
-                                {
-                                    list<Edge> tempList = tempMap[key];
-                                    for(auto i : tempMapKeys)
-                                    {
-                                        list<Edge> tempList2 = tempMap[i];
-                                        for(auto j : tempList)
-                                        {
-                                            for(auto k : tempList2)
-                                            {
-                                                if(i != key && (graphObj.endpoints(j).second == graphObj.endpoints(k).second))
-                                                {
-                                                    // this is a match so now I need to check the weights of the two edges and see which one is lighter 
-                                                    if(j.weight() < k.weight())
-                                                    {
-                                                        
-                                                        if(!matchedVertex.empty())
-                                                        {
-                                                          for(auto m : std::views::reverse(tempMapKeys))
-                                                          {
-                                                            if(!checkCurrentEdges) break;
-                                                            list<Edge> checkMatchList = tempMap[m];
-                                                            for(auto n : checkMatchList)
-                                                            {
-                                                                if(graphObj.endpoints(n).second == graphObj.endpoints(j).first)
-                                                                {
-                                                                    tempMap[m].push_back(j); // here the loop is needed again 
-                                                                    tempMapKeys.push_back(graphObj.endpoints(j).first);
-                                                                    
-                                                                    checkCurrentEdges = false;
-                                                                }
-                                                            }
-                                                          }
-                                                        }
-                                                        else 
-                                                        {
-                                                            matchedVertex.emplace_back(graphObj.endpoints(j).second, j);
-                                                            checkCurrentEdges = false;
-                                                        }
-                                                    }
-                                                    else if(j.weight() > k.weight())
-                                                    {
-                                                      if(!matchedVertex.empty())
-                                                        {
-                                                          for(auto m : std::views::reverse(tempMapKeys))
-                                                          {
-                                                            if(!checkCurrentEdges) break;
-                                                            list<Edge> checkMatchList = tempMap[m];
-                                                            for(auto n : checkMatchList)
-                                                            {
-                                                                if(graphObj.endpoints(n).second == graphObj.endpoints(k).first)
-                                                                {
-                                                                    tempMap[m].push_back(k); // here the loop is needed as well 
-                                                                    tempMapKeys.push_back(graphObj.endpoints(k).first);
-                                                                    checkCurrentEdges = false;
-                                                                }
-                                                            }
-                                                          }
-                                                        }
-                                                        else 
-                                                        {
-                                                            matchedVertex.emplace_back(graphObj.endpoints(j).second, j);
-                                                            checkCurrentEdges = false;
-                                                        }  
-                                                    } 
-                                                    else if(j.weight() == k.weight())
-                                                    {
-                                                        if(!matchedVertex.empty())
-                                                        {
-                                                          for(auto m : std::views::reverse(tempMapKeys))
-                                                          {
-                                                            if(!checkCurrentEdges) break;
-                                                            list<Edge> checkMatchList = tempMap[m];
-                                                            for(auto n : checkMatchList)
-                                                            {
-                                                                if(graphObj.endpoints(n).second == graphObj.endpoints(k).first )
-                                                                {
-                                                                    tempMap[m].push_back(k); // here again 
-                                                                    tempMapKeys.push_back(graphObj.endpoints(k).first);
-                                                                    checkCurrentEdges = false;
-                                                                }else if(graphObj.endpoints(n).second == graphObj.endpoints(j).first)
-                                                                {
-                                                                    tempMap[m].push_back(j); // and here 
-                                                                    tempMapKeys.push_back(graphObj.endpoints(j).first);
-                                                                    checkCurrentEdges = false;
-                                                                }
-                                                            }
-                                                          }
-                                                        }
-                                                        else 
-                                                        {
-                                                            matchedVertex.emplace_back(graphObj.endpoints(j).second, j);
-                                                            matchedVertex.emplace_back(graphObj.endpoints(k).second, k);
-                                                            checkCurrentEdges = false;
-                                                        }
-                                                    
-                                                }
-                                                
-                                            }
-                                        }
-                                        
-                                    }
-                                }
-                            } // if more than one key else just use move 
+                        {                       
                             if(stemmedTreeKeys.size() > 1)
                             {
                                 for(auto key : stemmedTreeKeys)
                                 {
-                                    if(!tempMap[key].empty())
+                                    if(!pathA[key].empty())
                                     {
-                                        for(auto i : tempMap[key])
+                                        for(auto i : pathA[key])
                                         {
                                             tempRef.push_back(i);
                                         }
                                     }
                                 }
                                 stemmedTreeKeys.clear(); // clear for a new set of keys 
-                            }else
+                            }else if(stemmedTreeKeys.size() == 1)
                             {
                                tempRef = move(stemmedTree); // this is the next wave of edges to check for matches
-                            }
-                        }                        
-                    }
-                    
+                               stemmedTreeKeys.clear();
+                            }else{done == true;}
+                            
+                        } // else close                          
+    } // end of while(done)
 
-                }// end of while(startWalk)
-                      
-             
-        }        
+    while(!done)
+    {
+        for(const auto& itr : views::reverse(VertexOrder))
+        {
+            list<Edge> edgeRef = pathA[itr];
+            for(const auto& itr2 : edgeRef)
+            {
+                if(createdPath.size() == 1 && graphObj.endpoints(itr2).first == cellToVertex[rowForEnd][colForEnd].value()) // right now its itr2.first due to using incoming map should be .second
+            {
+                list<Edge> EndCase = graphObj.incident_edges_X(graphObj.endpoints(itr2).second, graphObj.endpoints(itr2).first, false); // these two arguments should be flipped if above is false
+                for(const auto& itr3 : EndCase)
+                {
+                    if(lightestEdge.empty())
+                    lightestEdge.emplace_back(graphObj.endpoints(itr3).second, itr3.weight());               
+                    else if(!lightestEdge.empty() && itr3.weight() < lightestEdge.front().second)
+                    {
+                        lightestEdge.pop_front();
+                        lightestEdge.emplace_back(graphObj.endpoints(itr3).second, itr3.weight());
+                    }
+                }
+                createdPath.push_front(pathA[lightestEdge.front().first].front());
+                lightestEdge.clear();
+            }
+
+            else if(createdPath.size() > 1 && graphObj.endpoints(itr2).second == graphObj.endpoints(createdPath.front()).first)
+            {
+                list<Edge> EndCase = graphObj.incident_edges_X(graphObj.endpoints(itr2).first, graphObj.endpoints(itr2).second, false);
+                for(const auto& itr3 : EndCase)
+                {
+                    if(lightestEdge.empty())
+                    lightestEdge.emplace_back(graphObj.endpoints(itr3).second, itr3.weight());               
+                    else if(!lightestEdge.empty() && itr3.weight() < lightestEdge.front().second)
+                    {
+                        lightestEdge.pop_front();
+                        lightestEdge.emplace_back(graphObj.endpoints(itr3).second, itr3.weight());
+                    }
+                }
+                createdPath.push_front(pathA[lightestEdge.front().first].front());
+                lightestEdge.clear();
+            }
+            
+            }
+        } // close a for loop 
+        if(graphObj.endpoints(createdPath.back()).first == cellToVertex[rowForStart][colForStart].value() && graphObj.endpoints(createdPath.front()).second == cellToVertex[rowForEnd][colForEnd].value()) done = true;
     }
-    }
+
+} // end of createEdges()
     
     void usePath()
     {
         
-        for(auto i : createdPath)
+        for(auto i : views::reverse(createdPath))
         {
             //cout << "Edge from " << *graphObj.endpoints(i).first << " to " << *graphObj.endpoints(i).second << " with weight " << i.weight() << endl;
             int row = *graphObj.endpoints(i).first / 16;
@@ -460,49 +372,6 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
         
     }
     
-    // TESTER FOR FUNCTION TO BE WORKING PROPERLY 
-    int outputVertices()
-    {
-        return graphObj.num_vertices();
-    }
-    void outputEdgeCheck()
-    { 
-        cout << graphObj.num_edges() << endl;
-    }
-    
-    int degreeOfVertex()
-    { int n = 0;
-        for(auto i : cellToVertex)
-        {
-            for(auto j : i)
-            {
-                if(j.has_value())
-                {
-                    if(n == cellToVertex.size() - 10)
-                    {
-                        cout << "Index " << *j.value() << endl;
-                        return graphObj.degree(j.value());
-                    }
-                    n++;
-                }
-            }
-        }
-        return 0;
-    }
-    void outputCells()
-    {
-        for(auto r = 0; r < cellToVertex.size(); r++)
-        {
-            for(auto c = 0; c < cellToVertex.at(0).size(); c++)
-            {
-                if(cellToVertex.at(r).at(c).has_value())
-                {
-                    cout << "Row: " << r << " Col: " << c << " Vertex Index: " << *cellToVertex.at(r).at(c).value() << endl;
-                }
-            }
-        }
-    }
-    //////////////////////////////////////////
 };
 
 //reference table for graph 

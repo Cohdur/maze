@@ -240,14 +240,16 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                 {
                                     done = true;
                                     break;
-                                }else stemmedTree.clear(); // removing the situation that uses this at dead ends suspected bug for loops
+                                }else stemmedTree.clear(); // removing the situation that uses this at dead ends suspected bug for loops except the final position
                             }
-
-                            if(stemmedTreeKeys.empty())
+                            if(!stemmedTree.empty())
                             {
-                               stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first);  
-                            }
-                            else
+
+                                if(stemmedTreeKeys.empty())
+                                {
+                                    stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first);  
+                                }
+                            else if(!stemmedTree.empty())
                             {   
                                 for(const auto& i : views::reverse(stemmedTreeKeys))
                                 {
@@ -258,27 +260,42 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                 }                               
                             }                            
                             
-                            for(const auto& i : stemmedTree)
-                            {    // this has to be where the loop is happening                             
-                                newWeight = tempRef.front().weight() + i.weight(); 
-                                //graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight);                               
-
+                            for(auto i = stemmedTree.begin(); i != stemmedTree.end();)
+                            {                               
+                                //newWeight = tempRef.front().weight() + (*i).weight();                              
+                                if(stemmedTree.empty()) break;
                                 for(const auto& j : views::reverse(VertexOrder))
                                 {
-                                    for(const auto& k : pathA[j])
-                                    {
-                                        if(graphObj.endpoints(k).first == graphObj.endpoints(i).second) break;
-                                        else if(j == VertexOrder.front() && (graphObj.endpoints(k).first != graphObj.endpoints(i).second))
+                                    //for(const auto& k : pathA[j])
+                                    //{
+                                        //if(graphObj.endpoints(k).first == graphObj.endpoints(i).second) break;
+                                        // the case that one edge is backwards and the other is in correct direction
+                                        // *****I can change to manual for loop and erase it*****
+                                        //if(j == graphObj.endpoints(i).second) break;
+                                        if(!stemmedTree.empty())
                                         {
-                                            graphObj.insert_edge(graphObj.endpoints(i).first, graphObj.endpoints(i).second, newWeight); 
-                                            pathA.insert({graphObj.endpoints(i).first, stemmedTree});
-                                            if(VertexOrder.back() != graphObj.endpoints(i).first) // this is based on pattern it can be faulty 
-                                            VertexOrder.push_back(graphObj.endpoints(i).first); 
-                                            //break;
-                                        }
-                                    } 
+                                            typename list<Edge>::iterator itrRef = i;
+                                            if(i != stemmedTree.end() && j == graphObj.endpoints(*itrRef).second)
+                                            {
+                                                i = stemmedTree.erase(i);
+                                            }
+                                            else if(i != stemmedTree.end() && j == VertexOrder.front() && (j != graphObj.endpoints(*itrRef).second))
+                                            {
+                                                newWeight = tempRef.front().weight() + (*itrRef).weight();  
+                                                graphObj.insert_edge(graphObj.endpoints(*itrRef).first, graphObj.endpoints(*itrRef).second, newWeight); 
+                                                pathA.insert({graphObj.endpoints(*itrRef).first, stemmedTree});
+                                                if(VertexOrder.back() != graphObj.endpoints(*itrRef).first) // this is based on pattern it can be faulty 
+                                                VertexOrder.push_back(graphObj.endpoints(*itrRef).first); 
+                                                
+                                            }
+                                        }else break;
+
+                                    //} 
                                 }                                                          
+                                if(i != stemmedTree.end()) ++i;
                             }
+                            
+                        } // end of !stemedTree.empty()
                             tempRef.pop_front(); 
                         } // so look for matches the assignment is already started for tempRef use tempRef.move(stemmedTree) for the next wave 
                         else

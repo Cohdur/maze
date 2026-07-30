@@ -236,12 +236,64 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             if(stemmedTree.empty())
                             {
                                 stemmedTree = graphObj.incident_edges(graphObj.endpoints(tempRef.front()).second);
-                                if(graphObj.endpoints(stemmedTree.front()).first == cellToVertex[rowForEnd][colForEnd].value())
-                                {
-                                    done = true;
-                                    break;
-                                }else stemmedTree.clear(); // removing the situation that uses this at dead ends suspected bug for loops except the final position
-                            }
+
+                                    bool notEnd = true;
+                                    if(graphObj.endpoints(stemmedTree.front()).first == cellToVertex[rowForEnd][colForEnd].value())
+                                    {
+                                        stemmedTree.push_back(graphObj.get_edge(graphObj.endpoints(stemmedTree.front()).second,graphObj.endpoints(stemmedTree.front()).first));
+                                        stemmedTree.pop_front();
+                                                                   
+                                        newWeight = tempRef.front().weight() + (stemmedTree.front()).weight();  
+                                        graphObj.insert_edge(graphObj.endpoints(stemmedTree.front()).first, graphObj.endpoints(stemmedTree.front()).second, newWeight); 
+                                        pathA.insert({graphObj.endpoints(stemmedTree.front()).first, stemmedTree});
+                                        if(VertexOrder.back() != graphObj.endpoints(stemmedTree.front()).first) // this is based on pattern it can be faulty 
+                                        VertexOrder.push_back(graphObj.endpoints(stemmedTree.front()).first);
+                                    
+                                        done = true;
+                                        
+                                        break;
+                                    }
+                                    else
+                                    {
+                                    Edge tempHolder;
+                                    if(stemmedTreeKeys.empty())
+                                    {
+                                        stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first);  
+                                    }
+
+                                    for(auto ptr = stemmedTree.begin(); ptr != stemmedTree.end();)
+                                    {
+                                        typename list<Edge>::iterator itrRef = ptr;
+                                        if(graphObj.endpoints(*itrRef).first == cellToVertex[rowForEnd][colForEnd].value())
+                                        {
+                                            tempHolder = graphObj.get_edge(graphObj.endpoints(*itrRef).second,graphObj.endpoints(*itrRef).first);
+                                            stemmedTree.clear();
+                                            stemmedTree.push_back(tempHolder);
+                                            newWeight = tempRef.front().weight() + (stemmedTree.front()).weight();  
+                                            graphObj.insert_edge(graphObj.endpoints(stemmedTree.front()).first, graphObj.endpoints(stemmedTree.front()).second, newWeight); 
+                                            pathA.insert({graphObj.endpoints(stemmedTree.front()).first, stemmedTree});
+
+                                            if(VertexOrder.back() != graphObj.endpoints(stemmedTree.front()).first) // this is based on pattern it can be faulty 
+                                                VertexOrder.push_back(graphObj.endpoints(stemmedTree.front()).first);
+                                            done = true;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if(graphObj.endpoints(*itrRef).first != stemmedTreeKeys.back())
+                                            {
+                                               stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first);
+                                            }
+                                            ptr = stemmedTree.erase(ptr);
+                                        }
+                                    }
+ 
+                                    //done = true;
+                                    if(done)break;
+                                    
+                                    }                                                               
+                            
+                            }// close stemmedTree.empty()
                             if(!stemmedTree.empty())
                             {
 
@@ -249,16 +301,16 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                 {
                                     stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first);  
                                 }
-                            else if(!stemmedTree.empty())
-                            {   
-                                for(const auto& i : views::reverse(stemmedTreeKeys))
-                                {
-                                    if(i == stemmedTreeKeys.front() && i != graphObj.endpoints(stemmedTree.front()).first)
+                                else
+                                {   
+                                    for(const auto& i : views::reverse(stemmedTreeKeys))
                                     {
-                                        stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first); 
-                                    }else if(i == graphObj.endpoints(stemmedTree.front()).first) break; // no duplicates for keys 
-                                }                               
-                            }                            
+                                        if(i == stemmedTreeKeys.front() && i != graphObj.endpoints(stemmedTree.front()).first)
+                                        {
+                                            stemmedTreeKeys.push_back(graphObj.endpoints(stemmedTree.front()).first); 
+                                        }else if(i == graphObj.endpoints(stemmedTree.front()).first) break; // no duplicates for keys 
+                                    }                               
+                                }                            
                             
                             for(auto i = stemmedTree.begin(); i != stemmedTree.end();)
                             {                               
@@ -317,11 +369,11 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             {
                                tempRef = move(stemmedTree); // this is the next wave of edges to check for matches
                                stemmedTreeKeys.clear();
-                            }else{done == true;}
+                            }
                             
                         } // else close                          
     } // end of while(done)
-
+    done = false; // for now it's a test placement 
     while(!done)
     {
         for(const auto& itr : views::reverse(VertexOrder))
@@ -329,9 +381,9 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             list<Edge> edgeRef = pathA[itr];
             for(const auto& itr2 : edgeRef)
             {
-                if(createdPath.size() == 1 && graphObj.endpoints(itr2).first == cellToVertex[rowForEnd][colForEnd].value()) // right now its itr2.first due to using incoming map should be .second
+            if(createdPath.size() == 1 && graphObj.endpoints(itr2).second == cellToVertex[rowForEnd][colForEnd].value()) // right now its itr2.first due to using incoming map should be .second
             {
-                list<Edge> EndCase = graphObj.incident_edges_X(graphObj.endpoints(itr2).second, graphObj.endpoints(itr2).first, false); // these two arguments should be flipped if above is false
+                list<Edge> EndCase = graphObj.incident_edges_X(graphObj.endpoints(itr2).first, graphObj.endpoints(itr2).second, false); // these two arguments should be flipped if above is false
                 for(const auto& itr3 : EndCase)
                 {
                     if(lightestEdge.empty())
@@ -365,7 +417,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             
             }
         } // close a for loop 
-        if(graphObj.endpoints(createdPath.back()).first == cellToVertex[rowForStart][colForStart].value() && graphObj.endpoints(createdPath.front()).second == cellToVertex[rowForEnd][colForEnd].value()) done = true;
+        //if(itr == VertexOrder.begin()) 
+        done = true; // try it without condition first to see if it manages 
     }
 
 } // end of createEdges()

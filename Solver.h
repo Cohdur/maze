@@ -56,7 +56,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     {
         mazeObj.createMaze();
         
-        for(auto x = 0; x < 5; x++)
+        for(auto x = 0; x < 35; x++)
         {
             mazeObj.create_openeings();
         }
@@ -313,16 +313,10 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                             
                             for(auto i = stemmedTree.begin(); i != stemmedTree.end();)
                             {                               
-                                //newWeight = tempRef.front().weight() + (*i).weight();                              
+                                                          
                                 if(stemmedTree.empty()) break;
                                 for(const auto& j : views::reverse(VertexOrder))
                                 {
-                                    //for(const auto& k : pathA[j])
-                                    //{
-                                        //if(graphObj.endpoints(k).first == graphObj.endpoints(i).second) break;
-                                        // the case that one edge is backwards and the other is in correct direction
-                                        // *****I can change to manual for loop and erase it*****
-                                        //if(j == graphObj.endpoints(i).second) break;
                                         if(!stemmedTree.empty())
                                         {
                                             typename list<Edge>::iterator itrRef = i;
@@ -341,7 +335,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
                                             }
                                         }else break;
 
-                                    //} 
+                                     
                                 }                                                          
                                 if(i != stemmedTree.end()) ++i;
                             }
@@ -383,18 +377,19 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
             {
             if(createdPath.size() == 1 && graphObj.endpoints(itr2).second == cellToVertex[rowForEnd][colForEnd].value()) // right now its itr2.first due to using incoming map should be .second
             {
-                // I can also walk through and eliminate it as the iteration goes through avoid house keeping after scope
+                
                 createdPath.push_front(itr2); // involve the end edge
                 list<Edge> EndCase = graphObj.incident_edges_X(graphObj.endpoints(itr2).first, graphObj.endpoints(itr2).second, false); // these two arguments should be flipped if above is false
-                for(const auto& itr3 : EndCase)
+                while(!EndCase.empty()) 
                 {
                     if(lightestEdge.empty())
-                    lightestEdge.emplace_back(graphObj.endpoints(itr3).second, itr3.weight());               
-                    else if(!lightestEdge.empty() && itr3.weight() < lightestEdge.front().second && (itr3.weight() != 1))
+                    lightestEdge.emplace_back(graphObj.endpoints(EndCase.front()).second, EndCase.front().weight());               
+                    else if(!lightestEdge.empty() && EndCase.front().weight() < lightestEdge.front().second && (EndCase.front().weight() != 1))
                     {
                         lightestEdge.pop_front();
-                        lightestEdge.emplace_back(graphObj.endpoints(itr3).second, itr3.weight());
+                        lightestEdge.emplace_back(graphObj.endpoints(EndCase.front()).second, EndCase.front().weight());
                     }
+                    EndCase.pop_front();
                 }
                 createdPath.push_front(pathA[lightestEdge.front().first].front());
                 lightestEdge.clear();
@@ -402,17 +397,18 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
             else if(createdPath.size() > 1 && graphObj.endpoints(itr2).second == graphObj.endpoints(createdPath.front()).first)
             {
-                // change to eliminate the temp list created so it's a single pass over 
+                
                 list<Edge> EndCase = graphObj.incident_edges_X(graphObj.endpoints(itr2).first, graphObj.endpoints(itr2).second, false);
-                for(const auto& itr3 : EndCase)
+                while(!EndCase.empty()) 
                 {
                     if(lightestEdge.empty())
-                    lightestEdge.emplace_back(graphObj.endpoints(itr3).second, itr3.weight());               
-                    else if(!lightestEdge.empty() && itr3.weight() < lightestEdge.front().second && (itr3.weight() != 1))
+                    lightestEdge.emplace_back(graphObj.endpoints(EndCase.front()).second, EndCase.front().weight());               
+                    else if(!lightestEdge.empty() && EndCase.front().weight() < lightestEdge.front().second && (EndCase.front().weight() != 1))
                     {
                         lightestEdge.pop_front();
-                        lightestEdge.emplace_back(graphObj.endpoints(itr3).second, itr3.weight());
+                        lightestEdge.emplace_back(graphObj.endpoints(EndCase.front()).second, EndCase.front().weight());
                     }
+                    EndCase.pop_front();
                 }
                 createdPath.push_front(pathA[lightestEdge.front().first].front());
                 lightestEdge.clear();
@@ -429,7 +425,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     void usePath()
     {
         
-        for(auto i : views::reverse(createdPath))
+        for(auto i : createdPath)
         {
             int row = *graphObj.endpoints(i).first / 16;
             int col = *graphObj.endpoints(i).first % 16;

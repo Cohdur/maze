@@ -144,7 +144,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
 
             std::random_device rd;
             std::mt19937 engine(rd());
-            std::uniform_int_distribution<> distrib(1, big_size - 1); //changed lower bound to 1 and upper bound to - 2 instead of - 1
+            std::uniform_int_distribution<> distrib(1, big_size - 2); //changed lower bound to 1 and upper bound to - 2 instead of - 1
             
             int random_choice = distrib(engine);
             //int random_choice = Grid_choices[distrib(engine)];

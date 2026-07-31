@@ -3,7 +3,6 @@
 #include<chrono>
 #include<climits>
 #include<functional>
-#include<queue>
 #include<optional>
 #include<map>
 #include<utility> 
@@ -56,7 +55,7 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
     {
         mazeObj.createMaze();
         
-        for(auto x = 0; x < 35; x++)
+        for(auto x = 0; x < 40; x++)
         {
             mazeObj.create_openeings();
         }
@@ -126,16 +125,8 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
         list<pair<Vertex, double>> lightestEdge;
         list<Vertex> VertexOrder; // there is no order insertion this is the key for returning the maps order of walked path
-
-        typename list<Vertex>::const_iterator neighborPtrItr;
-        const Vertex* neighborPtr = nullptr;
-
-        
+   
         unordered_map<Vertex, list<Edge>, typename Vertex::Hash> pathA; // projecting outward so only use one for all possibilities
-
-        typename unordered_map<Vertex, list<Edge>, typename Vertex::Hash>::iterator pathAPtrItr; 
-        const Vertex* pathAPtr = nullptr;
-
         
 
         while(!done)

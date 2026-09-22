@@ -70,7 +70,8 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
             return big_maze;
         }
         
-        void create_openeings()
+        
+        void create_openings()
         {
             std::random_device rd;
             std::mt19937 engine(rd());
@@ -139,6 +140,7 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
         {
             big_maze.at(row).at(col) = value;
         }
+
         void createMaze()
         {
 
@@ -932,6 +934,65 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
             }
 
         }
+void create_fixed_maze()
+{
+    const int n = 16;
+    big_maze.assign(n, std::vector<char>(n, '+'));
+
+    auto open = [&](int r, int c)
+    {
+        if (r >= 0 && r < n && c >= 0 && c < n)
+            big_maze[r][c] = ' ';
+    };
+
+    // Main connected route from O to H.
+    for (int c = 1; c <= 11; ++c) open(1, c);
+    for (int r = 1; r <= 5; ++r) open(r, 11);
+    for (int c = 11; c <= 14; ++c) open(5, c);
+    for (int r = 5; r <= 10; ++r) open(r, 14);
+    for (int c = 14; c >= 1; --c) open(10, c);
+    for (int r = 10; r <= 13; ++r) open(r, 1);
+    for (int c = 1; c <= 13; ++c) open(13, c);
+    for (int r = 13; r <= 15; ++r) open(r, 13);
+
+    // Dead-end branches and alternate routes.
+    for (int r = 3; r <= 9; ++r) open(r, 3);
+    for (int c = 3; c <= 7; ++c) open(9, c);
+    for (int r = 7; r <= 13; ++r) open(r, 7);
+    for (int c = 7; c <= 11; ++c) open(13, c);
+    for (int r = 2; r <= 8; ++r) open(r, 8);
+    for (int c = 8; c <= 12; ++c) open(8, c);
+    for (int r = 11; r <= 14; ++r) open(r, 11);
+    for (int c = 11; c <= 14; ++c) open(14, c);
+
+    // Extra dead-ends that are not on the main route.
+    open(2, 5); open(2, 6); open(3, 5); open(5, 5); open(6, 5); open(7, 5);
+    open(4, 12); open(5, 12); open(6, 12); open(7, 12); open(8, 12);
+    open(10, 9); open(10, 10); open(11, 9); open(12, 9); open(13, 9);
+
+    // Keep the border walls.
+    for (int i = 0; i < n; ++i)
+    {
+        big_maze[0][i] = '+';
+        big_maze[n - 1][i] = '+';
+        big_maze[i][0] = '+';
+        big_maze[i][n - 1] = '+';
+    }
+
+    // Start and goal remain on the outer boundary but are connected inward.
+    big_maze[0][1] = 'O';
+    big_maze[15][14] = 'H';
+    big_maze[1][1] = ' ';
+    big_maze[1][2] = ' ';
+    big_maze[14][14] = ' ';
+    big_maze[14][13] = ' ';
+    //big_maze[15][13] = ' ';
+
+    StartIndexRow = 0;
+    StartIndexCol = 1;
+    EndIndexRow = 15;
+    endIndexCol = 14;
+}
         void output()
         {
             for(auto i : big_maze)
@@ -946,6 +1007,5 @@ class maze //: public Graph<V, E> // char = character/ board & int is edge weigh
 
         }
     
-
 };
 

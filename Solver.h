@@ -53,12 +53,15 @@ class Solver //: public Graph<V, E> // char = character/ board & int is edge wei
 
     void Maze()
     {
-        mazeObj.createMaze();
-        
-        for(auto x = 0; x < 40; x++)
+        //mazeObj.createMaze();
+        mazeObj.create_fixed_maze();
+        /*
+        for(auto x = 0; x < 80; x++)
         {
-            mazeObj.create_openeings();
+            mazeObj.create_openings();
         }
+        */
+        
 
         mazeObj.output();
     }
